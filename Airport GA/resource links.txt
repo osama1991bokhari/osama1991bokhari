@@ -1,0 +1,7 @@
+Resources
+
+[Execute specified function every X seconds](https://stackoverflow.com/questions/6169288/execute-specified-function-every-x-seconds)
+
+[read a text file from last line to first line](https://stackoverflow.com/questions/7915405/how-to-read-a-text-file-from-last-line-to-first-line-in-c-sharp)
+
+https://stackoverflow.com/questions/13220856/how-to-use-multi-color-in-richtextbox
