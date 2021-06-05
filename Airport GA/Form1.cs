@@ -860,8 +860,11 @@ namespace Airport_GA
                         if((Regex.IsMatch(lineCom1.Substring(lineCom1.IndexOf("RESET")), @"\d{2},\s\d{4}") |
                         Regex.IsMatch(lineCom1.Substring(lineCom1.IndexOf("RESET")), @"\d{6}")))
                             lineCom1 = "SYSTEM RESET                             "+defaultTime;
-                    if(lineCom1.Contains("PLEASE WAIT"))
-                        lineCom1 = "SYSTEM POWER UP       PLEASE WAIT                             " + defaultTime;
+                    if(lineCom1.Contains("PLEASE WAIT")&!is_Com1_3030)
+                    {
+                        lineCom1 = Process_signal(lineCom1);
+                        lineCom1 = "TROUBL IN SYSTEM    Sys Initialization                       03:18P 060321 Thu  ";
+                    }
                     List<string> sb = new List<string>();
                     if (clrTroubles.Matches(lineCom1).Count > 1)
                     {
@@ -981,7 +984,7 @@ namespace Airport_GA
             }
             if (startWithTrouble & !containAck & !containCLR)
             {
-                if ((modNum3030.IsMatch(completeSignal) | modNum640.IsMatch(completeSignal)) & powerModule.IsMatch(completeSignal))
+                if ((modNum3030.IsMatch(completeSignal) | modNum640.IsMatch(completeSignal)) & !powerModule.IsMatch(completeSignal))
                 {
                     alarm[currNodeIndx] = false;
                     trouble[currNodeIndx] = true;
