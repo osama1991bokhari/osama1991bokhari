@@ -1,15 +1,12 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Drawing;
-using System.IO;
-using System.Security.Cryptography;
-using System.Text;
 using System.Windows.Forms;
 
 namespace Airport_GA
 {
     class Helper
     {
+
         public static void TxtColor(RichTextBox rtb, Color color)
         {
             rtb.SelectionStart = rtb.TextLength;
@@ -22,96 +19,28 @@ namespace Airport_GA
             rtb.SelectionLength = 0;
             rtb.SelectionColor = color;
         }
-        public static void ColorLine(string sigType, RichTextBox rtb)
+
+        public static void ColorLine(RichTextBox rtb)
         {
-            string text = rtb.Text;
-            foreach(var line in rtb.Lines)
+            rtb.DeselectAll();
+            foreach (var line in rtb.Lines)
             {
-                if (line.Contains("ALARM"))
-                {
-                    int firstCharIndx = rtb.GetFirstCharIndexOfCurrentLine();
-                    int currentLine = rtb.GetLineFromCharIndex(firstCharIndx);
-                    rtb.Select(firstCharIndx, 10);
+                int firstCharIndx = rtb.GetFirstCharIndexOfCurrentLine();
+                int length = line.Length;
+                rtb.SelectionStart = firstCharIndx;
+                rtb.SelectionLength = length;
+                if (line.StartsWith("ALARM"))
                     rtb.SelectionColor = Color.Red;
-                    rtb.DeselectAll();
-                    rtb.Select(rtb.Text.Length, 0);
-                }
-                else if (line.Contains("TROUBLE"))
-                {
-                    int firstCharIndx = rtb.GetFirstCharIndexOfCurrentLine();
-                    int currentLine = rtb.GetLineFromCharIndex(firstCharIndx);
-                    rtb.Select(firstCharIndx, 10);
+                else if (line.StartsWith("TROUBLE"))
                     rtb.SelectionColor = Color.Orange;
-                    rtb.DeselectAll();
-                    rtb.Select(rtb.Text.Length, 0);
-                }
-                else if (line.Contains("SUPERVISORY"))
-                {
-                    int firstCharIndx = rtb.GetFirstCharIndexOfCurrentLine();
-                    int currentLine = rtb.GetLineFromCharIndex(firstCharIndx);
-                    rtb.Select(firstCharIndx, 10);
+                else if (line.StartsWith("SUPERV") | line.StartsWith("ACTIVE"))
                     rtb.SelectionColor = Color.IndianRed;
-                    rtb.DeselectAll();
-                    rtb.Select(rtb.Text.Length, 0);
-                }
                 else
-                {
-                    int firstCharIndx = rtb.GetFirstCharIndexOfCurrentLine();
-                    int currentLine = rtb.GetLineFromCharIndex(firstCharIndx);
-                    rtb.Select(firstCharIndx, 10);
                     rtb.SelectionColor = Color.Gold;
-                    rtb.DeselectAll();
-                    rtb.Select(rtb.Text.Length, 0);
-                }
+                rtb.Select(firstCharIndx + length + 1, 0);
             }
+            rtb.Select(rtb.Text.Length, 0);
         }
-        public static void HighlightLineContaining(RichTextBox rtb, int line, string search, Color color)
-        {
-            int c0 = rtb.GetFirstCharIndexFromLine(line);
-            int c1 = rtb.GetFirstCharIndexFromLine(line + 1);
-            if (c1 < 0)
-                c1 = rtb.Text.Length;
-            rtb.SelectionStart = c0;
-            rtb.SelectionLength = c1 - c0;
-            if (rtb.SelectedText.Length > 3)
-                if (rtb.SelectedText.Contains(search))
-                    rtb.SelectionColor = color;
-            rtb.SelectionLength = 0;
-        }
-        //public static string GetMD5HashFromFile(string fileName)
-        //{
-        //    if (File.Exists(fileName))
-        //    {
-        //        MD5 md5 = new MD5CryptoServiceProvider();
-        //        byte[] retVal;
-        //        while (true)
-        //        {
-        //            try
-        //            {
-        //            using (var stream = File.Open(fileName, FileMode.Open, FileAccess.Read, FileShare.ReadWrite))
-        //                {
-        //                retVal = md5.ComputeHash(stream);
-        //                stream.Close();
-        //                }
-        //                break;
-        //            }
-        //            catch
-        //            {
-
-        //            }
-        //        }
-
-        //        StringBuilder sb = new StringBuilder();
-        //        for (int i = 0; i < retVal.Length; i++)
-        //        {
-        //            sb.Append(retVal[i].ToString("x2"));
-        //        }
-        //        return sb.ToString();
-        //    }
-        //    else
-        //        return null;
-        //}
-
         public static void BackupRestoreZones(List<List<RectangleF>> led, List<List<RectangleF>> led_temp,
             List<List<RectangleF>> uniform, List<List<RectangleF>> uniform_temp,
             List<List<PointF[]>> unUniform, List<List<PointF[]>> unUniform_temp, int current_floor, int drawingCount)

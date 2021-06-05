@@ -1,0 +1,12 @@
+System.OutOfMemoryException: Out of memory.
+   at System.Drawing.Image.FromFile(String filename, Boolean useEmbeddedColorManagement)
+   at Airport_GA.Form1.InitTimer() in D:\Desktops\ATC\Airport GA\Airport GA\Form1.cs:line 327
+ : [!377]  ,  
+
+
+System.OutOfMemoryException: Out of memory.
+   at System.Drawing.Image.FromFile(String filename, Boolean useEmbeddedColorManagement)
+   at Airport_GA.Form1.InitTimer() in D:\Desktops\ATC\Airport GA\Airport GA\Form1.cs:line 327
+ : [!377]  ,  
+
+

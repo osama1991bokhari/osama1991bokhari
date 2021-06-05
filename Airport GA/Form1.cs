@@ -131,7 +131,39 @@ namespace Airport_GA
                 }
             }
         }
-
+        void PictureBox_Paint_active(object sender, PaintEventArgs e)
+        {
+            if (!blink1)
+            {
+                using (Pen p = new Pen(Color.IndianRed, borderSize))
+                {
+                    for (int i = 0; i < nodeCount; i++)
+                    {
+                        foreach (List<RectangleF> Led in activeLEDs[i].ToList())
+                        {
+                            foreach (RectangleF r in Led.ToList())
+                            {
+                                e.Graphics.FillRectangle(Brushes.IndianRed, r);
+                            }
+                        }
+                        foreach (List<RectangleF> uniform in activeSquare[i].ToList())
+                        {
+                            foreach (RectangleF r in uniform.ToList())
+                            {
+                                e.Graphics.DrawRectangle(p, Rectangle.Round(r));
+                            }
+                        }
+                        foreach (List<PointF[]> unUniform in activeMultiPoint[i].ToList())
+                        {
+                            foreach (PointF[] r in unUniform.ToList())
+                            {
+                                e.Graphics.DrawLines(p, r);
+                            }
+                        }
+                    }
+                }
+            }
+        }
 
         private void Form1_Load(object sender, EventArgs e)
         {
@@ -175,7 +207,8 @@ namespace Airport_GA
         Regex troubles = new Regex(@"TROUBL");
         Regex clrTroubles = new Regex(@"CLR TB|CLEARED TROUBL");
 
-        Regex modCode = new Regex(@"GEN ALARM|GEN TROUBL|TRACK SUPERV");
+        Regex modCode = new Regex(@"GEN ALARM|GEN TROUBL");
+        Regex powerModule = new Regex(@"L\d{2}M15[5-9]");
 
         private static string logFile = "LogFile.txt";
         private static string database = "";
@@ -187,26 +220,32 @@ namespace Airport_GA
         List <List<List<RectangleF>>> alarmLEDs = new List<List<List<RectangleF>>>();
         List<List<List<RectangleF>>> troubleLEDs = new List<List<List<RectangleF>>>();
         List<List<List<RectangleF>>> superLEDs = new List<List<List<RectangleF>>>();
+        List<List<List<RectangleF>>> activeLEDs = new List<List<List<RectangleF>>>();
 
         List<List<List<RectangleF>>> alarmLEDs_temp = new List<List<List<RectangleF>>>();
         List<List<List<RectangleF>>> troubleLEDs_temp = new List<List<List<RectangleF>>>();
         List<List<List<RectangleF>>> superLEDs_temp = new List<List<List<RectangleF>>>();
+        List<List<List<RectangleF>>> activeLEDs_temp = new List<List<List<RectangleF>>>();
 
         List<List<List<RectangleF>>> alarmSquare = new List<List<List<RectangleF>>>();
         List<List<List<RectangleF>>> troubleSquare = new List<List<List<RectangleF>>>();
         List<List<List<RectangleF>>> superSquare = new List<List<List<RectangleF>>>();
+        List<List<List<RectangleF>>> activeSquare = new List<List<List<RectangleF>>>();
 
         List<List<List<RectangleF>>> alarmSquare_temp = new List<List<List<RectangleF>>>();
         List<List<List<RectangleF>>> troubleSquare_temp = new List<List<List<RectangleF>>>();
         List<List<List<RectangleF>>> superSquare_temp = new List<List<List<RectangleF>>>();
+        List<List<List<RectangleF>>> activeSquare_temp = new List<List<List<RectangleF>>>();
 
         List<List<List<PointF[]>>> alarmMultiPoint = new List<List<List<PointF[]>>>();
         List<List<List<PointF[]>>> troubleMultiPoint = new List<List<List<PointF[]>>>();
         List<List<List<PointF[]>>> superMultiPoint = new List<List<List<PointF[]>>>();
+        List<List<List<PointF[]>>> activeMultiPoint = new List<List<List<PointF[]>>>();
 
         List<List<List<PointF[]>>> alarmMultiPoint_temp = new List<List<List<PointF[]>>>();
         List<List<List<PointF[]>>> troubleMultiPoint_temp = new List<List<List<PointF[]>>>();
         List<List<List<PointF[]>>> superMultiPoint_temp = new List<List<List<PointF[]>>>();
+        List<List<List<PointF[]>>> activeMultiPoint_temp = new List<List<List<PointF[]>>>();
 
 
 
@@ -229,6 +268,7 @@ namespace Airport_GA
         List<bool> alarm = new List<bool>();
         List<bool> trouble = new List<bool>();
         List<bool> super = new List<bool>();
+        List<bool> active = new List<bool>();
 
         string lineCom1;
 
@@ -331,9 +371,14 @@ namespace Airport_GA
                     databaseLED.Text = "DataBase is OK";
                 }
             }
-            catch
+            catch(Exception ex)
             {
                 MessageBox.Show("Unable to read Database file or Drawings'" + database + "'", "Error reading database file", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                using (StreamWriter sw = File.AppendText("databaseDrawingError.txt"))
+                {
+                    sw.WriteLine(ex + "\n : [!377] " + time.Text + ", " + DateTime.Now.ToString("hh:mm:ss tt") + "\n\n");
+                    sw.Close();
+                }
             }
 
             drawing_count = images.Count;
@@ -343,26 +388,32 @@ namespace Airport_GA
                 alarmLEDs.Add(new List<List<RectangleF>>());
                 troubleLEDs.Add(new List<List<RectangleF>>());
                 superLEDs.Add(new List<List<RectangleF>>());
+                activeLEDs.Add(new List<List<RectangleF>>());
 
                 alarmLEDs_temp.Add(new List<List<RectangleF>>());
                 troubleLEDs_temp.Add(new List<List<RectangleF>>());
                 superLEDs_temp.Add(new List<List<RectangleF>>());
+                activeLEDs_temp.Add(new List<List<RectangleF>>());
 
                 alarmSquare.Add(new List<List<RectangleF>>());
                 troubleSquare.Add(new List<List<RectangleF>>());
                 superSquare.Add(new List<List<RectangleF>>());
+                activeSquare.Add(new List<List<RectangleF>>());
 
                 alarmSquare_temp.Add(new List<List<RectangleF>>());
                 troubleSquare_temp.Add(new List<List<RectangleF>>());
                 superSquare_temp.Add(new List<List<RectangleF>>());
+                activeSquare_temp.Add(new List<List<RectangleF>>());
 
                 alarmMultiPoint.Add(new List<List<PointF[]>>());
                 troubleMultiPoint.Add(new List<List<PointF[]>>());
                 superMultiPoint.Add(new List<List<PointF[]>>());
+                activeMultiPoint.Add(new List<List<PointF[]>>());
 
                 alarmMultiPoint_temp.Add(new List<List<PointF[]>>());
                 troubleMultiPoint_temp.Add(new List<List<PointF[]>>());
                 superMultiPoint_temp.Add(new List<List<PointF[]>>());
+                activeMultiPoint_temp.Add(new List<List<PointF[]>>());
             }
             // Loading Zones Border, Led and youAreHere. NEED TO MAKE THIS DYNAMIC (Done!!!) //Make this to not relay on order
             try
@@ -383,6 +434,7 @@ namespace Airport_GA
                     alarm.Add(new bool());
                     trouble.Add(new bool());
                     super.Add(new bool());
+                    active.Add(new bool());
                     troubleCount.Add(new int());
                     superCount.Add(new int());
                     
@@ -461,28 +513,34 @@ namespace Airport_GA
                         alarmLEDs[j].Add(new List<RectangleF>());
                         troubleLEDs[j].Add(new List<RectangleF>());
                         superLEDs[j].Add(new List<RectangleF>());
+                        activeLEDs[j].Add(new List<RectangleF>());
 
                         alarmLEDs_temp[j].Add(new List<RectangleF>());
                         troubleLEDs_temp[j].Add(new List<RectangleF>());
                         superLEDs_temp[j].Add(new List<RectangleF>());
+                        activeLEDs_temp[j].Add(new List<RectangleF>());
 
                         alarmSquare[j].Add(new List<RectangleF>());
                         troubleSquare[j].Add(new List<RectangleF>());
                         superSquare[j].Add(new List<RectangleF>());
+                        activeSquare[j].Add(new List<RectangleF>());
 
                         alarmSquare_temp[j].Add(new List<RectangleF>());
                         troubleSquare_temp[j].Add(new List<RectangleF>());
                         superSquare_temp[j].Add(new List<RectangleF>());
+                        activeSquare_temp[j].Add(new List<RectangleF>());
 
 
                         alarmMultiPoint[j].Add(new List<PointF[]>());
                         troubleMultiPoint[j].Add(new List<PointF[]>());
                         superMultiPoint[j].Add(new List<PointF[]>());
+                        activeMultiPoint[j].Add(new List<PointF[]>());
 
 
                         alarmMultiPoint_temp[j].Add(new List<PointF[]>());
                         troubleMultiPoint_temp[j].Add(new List<PointF[]>());
                         superMultiPoint_temp[j].Add(new List<PointF[]>());
+                        activeMultiPoint_temp[j].Add(new List<PointF[]>());
                     }     
                 }
             }
@@ -612,6 +670,7 @@ namespace Airport_GA
                     lineCount++;
             }
             drawing.Paint += new System.Windows.Forms.PaintEventHandler(PictureBox_Paint_super);
+            drawing.Paint += new System.Windows.Forms.PaintEventHandler(PictureBox_Paint_active);
             drawing.Paint += new System.Windows.Forms.PaintEventHandler(PictureBox_Paint_troubl);
             drawing.Paint += new System.Windows.Forms.PaintEventHandler(PictureBox_Paint_alarm);
         }
@@ -644,11 +703,18 @@ namespace Airport_GA
                 }
                 try
                 {
-                    File.Copy(logFile, Path.Combine(@"logs", "LogFile_" + date.Text + " - " + time.Text.Replace(':', '_') + ".txt"), true);
+                    if (!File.Exists(Path.Combine(@"logs", "LogFile_" + date.Text + " - " + time.Text.Replace(':', '_') + ".txt")))
+                    {
+                        File.Copy(logFile, Path.Combine(@"logs", "LogFile_" + date.Text + " - " + time.Text.Replace(':', '_') + ".txt"), false);
+                    }
                 }
                 catch (IOException iox)
                 {
-                    Console.WriteLine(iox.Message);
+                    using (StreamWriter sw = File.AppendText("RestartBackupError.txt"))
+                    {
+                        sw.WriteLine(iox + "\n restartingError: [!727] " + time.Text + ", " + date.Text + "\n\n");
+                        sw.Close();
+                    }
                 }
                 System.IO.File.WriteAllText(logFile, string.Empty);
                 lineCom1 = "";
@@ -675,6 +741,11 @@ namespace Airport_GA
 
                 for (int i = 0; i < nodeCount; i++)
                 {
+                    if (active[i])
+                    {
+                        supervisoryLED.Show();
+                        break;
+                    }
                     if (superCount[i] > 0)
                     {
                         supervisoryLED.Show();
@@ -738,7 +809,8 @@ namespace Airport_GA
         }
         private void Timer3_Tick_Rotation(object sender, EventArgs e)
         {
-            drawingRotate();
+            if(drawing_count!=1)
+                drawingRotate();
         }
         private void Minimize(object sender, EventArgs e)
         {
@@ -768,7 +840,7 @@ namespace Airport_GA
                     sw.Write(signal1);
                     sw.Close();
                 }
-                bool line_640 = !is_Com1_3030 & (lineCom1.Contains("\n") | lineCom1.Contains("\r") | Regex.IsMatch(lineCom1, @"\d{6}"));
+                bool line_640 = !is_Com1_3030 & (Regex.IsMatch(lineCom1, @"\d{6} "));
                 bool line_3030_no_module = is_Com1_3030 & Regex.IsMatch(lineCom1, @"\d{2},\s\d{4}") & !lineCom1.Contains("L0");
                 bool line_3030_contains_moduel = false;
             try {
@@ -855,14 +927,21 @@ namespace Airport_GA
             completeSignal = Regex.Replace(completeSignal, @"\d{2}:\d{2}:\d{2}[A-Z]\s[A-Z]{3}\s[A-Z]{3}\s\d{2},\s\d{4}", "");//removes panel time3030
             completeSignal = Regex.Replace(completeSignal, @"\d{2}:\d{2}[A-Z]\s\d{6}\s[A-z]{3}", "");//removes panel time640
             completeSignal = Regex.Replace(completeSignal, @"\s{2,}", "|");//replace 2 or more white space with bars
-            completeSignal = Regex.Replace(completeSignal, @"\n|\r|IN SYSTEM|GEN ALARM|GEN TROUBL|TRACK SUPERV", "");//remove space and some words
+            completeSignal = Regex.Replace(completeSignal, @"\n|\r|IN SYSTEM|GEN ALARM|GEN TROUBL", "");//remove space and some words
 
             if (completeSignal[0] == '|')
                 completeSignal = completeSignal.Substring(1);
             string[] lines = completeSignal.Split('|');
+            bool startWithAlarm = completeSignal.StartsWith("ALARM") | completeSignal.StartsWith("FIRE ALARM");
+            bool startWithTrouble = completeSignal.StartsWith("TROUBL") & !completeSignal.StartsWith("TROUBLE_MON");
+            bool containSuper = completeSignal.Contains("SUPERV");
+            bool containActive = completeSignal.Contains("ACTIVE WATERFLOW_S") | completeSignal.Contains("ACTIVE TAMPER");
+            bool containAck = completeSignal.Contains("ACKN") | completeSignal.Contains("ACKED");
+            bool containCLRTB = completeSignal.Contains("CLR TB") | completeSignal.Contains("CLEARED TROUBL");
+            bool containCLR = completeSignal.Contains("CLEARED") | completeSignal.Contains("CLR");
             //filter signal code type and store it in a variable
             //check content here
-            if(is_Com1_3030)
+            if (is_Com1_3030)
             signal_module = modNum3030.Match(completeSignal).ToString();
             else
             signal_module = modNum640.Match(completeSignal).ToString();
@@ -892,21 +971,22 @@ namespace Airport_GA
                 }
 
             // Check which mode we are in
-            if (completeSignal.StartsWith("ALARM") & !completeSignal.Contains("ACKN"))
+            if (startWithAlarm & !containAck & !containCLR)
             {
                 alarm[currNodeIndx] = true;
                 trouble[currNodeIndx] = false;
                 super[currNodeIndx] = false;
+                active[currNodeIndx] = false;
                 // add one for track
             }
-            if (completeSignal.StartsWith("TROUBL") & !completeSignal.StartsWith("TROUBLE_MON") &
-                !completeSignal.Contains("ACKN") & !completeSignal.Contains("CLEARED") & !completeSignal.Contains("CLR"))
+            if (startWithTrouble & !containAck & !containCLR)
             {
-                if (modNum3030.IsMatch(completeSignal) | modNum640.IsMatch(completeSignal))
+                if ((modNum3030.IsMatch(completeSignal) | modNum640.IsMatch(completeSignal)) & powerModule.IsMatch(completeSignal))
                 {
                     alarm[currNodeIndx] = false;
                     trouble[currNodeIndx] = true;
                     super[currNodeIndx] = false;
+                    active[currNodeIndx] = false;
                 }
                 else
                 {
@@ -958,18 +1038,28 @@ namespace Airport_GA
 
                 troubleCount[currNodeIndx]++;
             }
-            if ((completeSignal.Contains("SUPERV") | completeSignal.Contains("ACTIVE TAMPER")) & !completeSignal.Contains("CLR") &
-                !completeSignal.Contains("ACKN") & !completeSignal.Contains("CLEARED"))//this should be separated for track superv
+            if (containSuper & !containAck & !containCLR)
             {
                 if (modNum3030.IsMatch(completeSignal) | modNum640.IsMatch(completeSignal))
                 {
                     alarm[currNodeIndx] = false;
                     trouble[currNodeIndx] = false;
                     super[currNodeIndx] = true;
+                    active[currNodeIndx] = false;
                 }
                 superCount[currNodeIndx]++;
             }
-            if (completeSignal.Contains("CLR TB") | completeSignal.Contains("CLEARED TROUBL"))
+            if (containActive & !containAck & !containCLR)//this should be separated for track superv
+            {
+                if (modNum3030.IsMatch(completeSignal) | modNum640.IsMatch(completeSignal))
+                {
+                    alarm[currNodeIndx] = false;
+                    trouble[currNodeIndx] = false;
+                    super[currNodeIndx] = false;
+                    active[currNodeIndx] = true;
+                }
+            }
+            if (containCLRTB)
             {
                 if (signal_zone != "")//if database contains battry, AC, etc.. remove it.
                 {
@@ -1043,8 +1133,7 @@ namespace Airport_GA
                 drawing.Invalidate();
 
             }
-            if ((completeSignal.Contains("CLR") | completeSignal.Contains("CLEARED")) & ((completeSignal.Contains("SUPERV") |
-                completeSignal.Contains("ACTIVE TAMPER"))))
+            if (containCLR & containSuper)
             {
                 if (signal_zone != "")
                 {
@@ -1082,6 +1171,7 @@ namespace Airport_GA
                 for(int i = 0;i < nodeCount; i++)
                 {
                     alarm[i] = false;
+                    active[i] = false;
                     //trouble[i] = false;
                     //super[i] = false;
                 }
@@ -1093,10 +1183,11 @@ namespace Airport_GA
 
                 for(int i = 0;i < nodeCount; i++)
                 {
-                rectToReset = new List<List<List<RectangleF>>>() {alarmLEDs[i], alarmLEDs_temp[i],
-                    alarmSquare[i], alarmSquare_temp[i]};
+                rectToReset = new List<List<List<RectangleF>>>() {alarmLEDs[i], alarmLEDs_temp[i], alarmSquare[i],
+                    alarmSquare_temp[i],activeLEDs[i], activeLEDs_temp[i], activeSquare[i], activeSquare_temp[i]};
 
-                pointToReset = new List<List<List<PointF[]>>>() {alarmMultiPoint[i], alarmMultiPoint_temp[i]};
+                pointToReset = new List<List<List<PointF[]>>>() {alarmMultiPoint[i], alarmMultiPoint_temp[i],
+                activeMultiPoint[i], activeMultiPoint_temp[i]};
 
                     foreach (List<List<RectangleF>> rectVar in rectToReset)
                     {
@@ -1115,16 +1206,13 @@ namespace Airport_GA
 
                 }
 
-                for(int i = 0;i < nodeCount; i++)
-                {
-                //troubleCount[currNodeIndx] = 0;
-                //superCount[currNodeIndx] = 0;
-                }
                 priorityFloor.Clear();
                 statusPanel.Invoke(new Action(() => { 
                     List<string> finalLines = statusPanel.Lines.ToList();
-                    finalLines.RemoveAll(x => x.StartsWith("ALARM") || x.StartsWith("TAMPER"));
-                    statusPanel.Lines = finalLines.ToArray();}));
+                    finalLines.RemoveAll(x => x.StartsWith("ALARM") || x.StartsWith("ACTIVE SUPERVISORY"));
+                    statusPanel.Lines = finalLines.ToArray();
+                    Helper.ColorLine(statusPanel);
+                }));
                 alarmEvnt.Invoke(new Action(() => {
                     alarmEvnt.Text = "";}));
                 alarmLog.Invoke(new Action(() => {
@@ -1132,37 +1220,41 @@ namespace Airport_GA
                     alarmLog.ForeColor = Color.Turquoise;
                     alarmLog.Select(alarmLog.TextLength, alarmLog.TextLength);
                     alarmLog.ScrollToCaret();}));
-
             }
             if (completeSignal.Contains("NORMAL"))
             {
-                    alarm[currNodeIndx] = false;
-                    trouble[currNodeIndx] = false;
-                    super[currNodeIndx] = false;
+                alarm[currNodeIndx] = false;
+                trouble[currNodeIndx] = false;
+                super[currNodeIndx] = false;
+                active[currNodeIndx] = false;
 
-                    var rectToReset = new List<List<List<RectangleF>>>();
-                    var pointToReset = new List<List<List<PointF[]>>>();
+                var rectToReset = new List<List<List<RectangleF>>>();
+                var pointToReset = new List<List<List<PointF[]>>>();
 
-                    rectToReset = new List<List<List<RectangleF>>>() {alarmLEDs[currNodeIndx], troubleLEDs[currNodeIndx], superLEDs[currNodeIndx], alarmLEDs_temp[currNodeIndx], troubleLEDs_temp[currNodeIndx],
-                    superLEDs_temp[currNodeIndx], alarmSquare[currNodeIndx], troubleSquare[currNodeIndx], superSquare[currNodeIndx], alarmSquare_temp[currNodeIndx], troubleSquare_temp[currNodeIndx], superSquare_temp[currNodeIndx]};
+                rectToReset = new List<List<List<RectangleF>>>() {alarmLEDs[currNodeIndx], troubleLEDs[currNodeIndx],
+                    superLEDs[currNodeIndx], activeLEDs[currNodeIndx], alarmLEDs_temp[currNodeIndx], troubleLEDs_temp[currNodeIndx],
+                    superLEDs_temp[currNodeIndx], activeLEDs_temp[currNodeIndx], alarmSquare[currNodeIndx], troubleSquare[currNodeIndx],
+                    superSquare[currNodeIndx], activeSquare[currNodeIndx], alarmSquare_temp[currNodeIndx], troubleSquare_temp[currNodeIndx],
+                    superSquare_temp[currNodeIndx], activeSquare_temp[currNodeIndx]};
 
-                    pointToReset = new List<List<List<PointF[]>>>() {alarmMultiPoint[currNodeIndx], troubleMultiPoint[currNodeIndx], superMultiPoint[currNodeIndx], alarmMultiPoint_temp[currNodeIndx],
-                    troubleMultiPoint_temp[currNodeIndx], superMultiPoint_temp[currNodeIndx]};
+                pointToReset = new List<List<List<PointF[]>>>() {alarmMultiPoint[currNodeIndx], troubleMultiPoint[currNodeIndx],
+                    superMultiPoint[currNodeIndx], activeMultiPoint[currNodeIndx], alarmMultiPoint_temp[currNodeIndx],
+                    troubleMultiPoint_temp[currNodeIndx], superMultiPoint_temp[currNodeIndx], activeMultiPoint_temp[currNodeIndx]};
 
-                    foreach (List<List<RectangleF>> rectVar in rectToReset)
+                foreach (List<List<RectangleF>> rectVar in rectToReset)
+                {
+                    foreach (List<RectangleF> rectangles in rectVar)
                     {
-                        foreach (List<RectangleF> rectangles in rectVar)
-                        {
-                            rectangles.Clear();
-                        }
+                        rectangles.Clear();
                     }
-                    foreach (List<List<PointF[]>> pointVar in pointToReset)
+                }
+                foreach (List<List<PointF[]>> pointVar in pointToReset)
+                {
+                    foreach (List<PointF[]> point in pointVar)
                     {
-                        foreach (List<PointF[]> point in pointVar)
-                        {
-                            point.Clear();
-                        }
+                        point.Clear();
                     }
+                }
 
                 drawing.Invalidate();
 
@@ -1176,7 +1268,7 @@ namespace Airport_GA
                 
             }
 
-            if (alarm[currNodeIndx] | trouble[currNodeIndx] | super[currNodeIndx])
+            if (alarm[currNodeIndx] | trouble[currNodeIndx] | super[currNodeIndx] | active[currNodeIndx])
             {
                 string fm200 = "";
                 if (completeSignal.Contains("-Z1"))
@@ -1187,12 +1279,12 @@ namespace Airport_GA
                     fm200 = " Trouble";
                 else if (completeSignal.Contains("-GD"))
                     fm200 = " GAS DISCHARGE";
-                if (!completeSignal.Contains("CLR") & !completeSignal.Contains("ACKN") & !completeSignal.Contains("CLEARED"))
+                if (!containAck & !containCLR)
                     if (modNum640.IsMatch(completeSignal))
                     {
                         try
                         {
-                            if(alarm[currNodeIndx] & !trouble[currNodeIndx] & !super[currNodeIndx])
+                            if(alarm[currNodeIndx] & !trouble[currNodeIndx] & !super[currNodeIndx] & !active[currNodeIndx])
                                 for (int i = 1; i < areaID.Count(); i++)
                                 {//extracting module zone and room lable and writing to alarmEvent if alarm.
                                     if (address[i].Contains(signal_module) & address[i].Contains(currNode))
@@ -1228,6 +1320,12 @@ namespace Airport_GA
                                         superMultiPoint[currNodeIndx][drawingNum].Add(multiPointZoneCoord[corresponNum][signal_zone]);
                                         superLEDs[currNodeIndx][drawingNum].Add(zoneLEDCoord[corresponNum][signal_zone]);
                                     }
+                                    if (active[currNodeIndx])
+                                    {
+                                        activeMultiPoint[currNodeIndx][drawingNum].Add(multiPointZoneCoord[corresponNum][signal_zone]);
+                                        activeLEDs[currNodeIndx][drawingNum].Add(zoneLEDCoord[corresponNum][signal_zone]);
+                                    }
+
                                 }
                                 if (squareZoneLabel[drawingNum].Contains(signal_zone))
                                 {
@@ -1248,7 +1346,11 @@ namespace Airport_GA
                                     {
                                         superSquare[currNodeIndx][drawingNum].Add(squareZoneCoord[corresponNum][signal_zone]);
                                         superLEDs[currNodeIndx][drawingNum].Add(zoneLEDCoord[corresponNum][signal_zone]);
-
+                                    }
+                                    if (active[currNodeIndx])
+                                    {
+                                        activeSquare[currNodeIndx][drawingNum].Add(squareZoneCoord[corresponNum][signal_zone]);
+                                        activeLEDs[currNodeIndx][drawingNum].Add(zoneLEDCoord[corresponNum][signal_zone]);
                                     }
                                 }
                             }
@@ -1260,8 +1362,8 @@ namespace Airport_GA
                                 statusPanel.ScrollToCaret();}));
                             }
 
-                            if (completeSignal.StartsWith("ALARM") & !completeSignal.Contains("CLEARED") & !completeSignal.Contains("ACKED"))
-                            {   //Writing to AlarmEvnt
+                            if (startWithAlarm & !containCLR & !containAck)
+                            {   //Writing to StatusPanel
                                 if (signal_module != "")
                                 for (int i = 1; i < areaID.Count(); i++)
                                 {  
@@ -1272,8 +1374,6 @@ namespace Airport_GA
                                                 statusPanel.AppendText("ALARM,  " + address[i] + ",  " +
                                                 areaID[i].Replace("ZONE ", "Z") + ", " + areaLabel[i] + ", " + addressLabel[i] + fm200 + "\n");
                                                 statusPanel.ScrollToCaret();
-                                                if (statusPanel.Lines.Count() < 30)
-                                                    Helper.ColorLine("ALARM", statusPanel);
                                             }));
                                             break;
                                         }
@@ -1281,7 +1381,7 @@ namespace Airport_GA
                             }
                             string signal_module_sp = "";
                             signal_module_sp = modNum640.Match(completeSignal).ToString();
-                            if (completeSignal.StartsWith("TROUBL") & !completeSignal.StartsWith("TROUBLE_MON") & !completeSignal.Contains("CLEARED") & !completeSignal.Contains("ACKED"))
+                            if (startWithTrouble & !containCLR & !containAck)
                             {
 
                                 for (int i = 1; i < areaID.Count(); i++)
@@ -1293,8 +1393,6 @@ namespace Airport_GA
                                             Helper.TxtColor2(statusPanel, Color.Orange);
                                             statusPanel.AppendText("TROUBLE,  " + panelNum + ",  " + lines[1+portPanelType] + fm200 + "\n");
                                             statusPanel.ScrollToCaret();
-                                            if (statusPanel.Lines.Count() < 30)
-                                                Helper.ColorLine("TROUBLE", statusPanel);
                                         }));
                                         break;
                                     }
@@ -1305,15 +1403,13 @@ namespace Airport_GA
                                         statusPanel.AppendText("TROUBLE,  " + ",  " + address[i] + ",  " +
                                             areaID[i].Replace("ZONE ", "Z") + ", " + areaLabel[i] + ", " + addressLabel[i] + fm200 + "\n");
                                             statusPanel.ScrollToCaret();
-                                            if (statusPanel.Lines.Count() < 30)
-                                                Helper.ColorLine("TROUBLE", statusPanel);
                                         }));
                                         break;
                                     }
 
                                 }
                             }
-                            if ((completeSignal.Contains("SUPERV") | completeSignal.Contains("ACTIVE TAMPER")) & !completeSignal.Contains("CLEARED") & !completeSignal.Contains("ACKED"))
+                            if (containSuper &!containCLR & !containAck)
                             {
                                 
                                 for (int i = 1; i < areaID.Count(); i++)
@@ -1325,8 +1421,6 @@ namespace Airport_GA
                                             Helper.TxtColor2(statusPanel, Color.IndianRed);
                                             statusPanel.AppendText("SUPERVISORY,  " + panelNum + ",  " + lines[1+portPanelType] + fm200 + "\n");
                                             statusPanel.ScrollToCaret();
-                                            if (statusPanel.Lines.Count() < 30)
-                                                Helper.ColorLine("SUPERVISORY", statusPanel);
                                         }));
                                         break;
                                     }
@@ -1337,8 +1431,33 @@ namespace Airport_GA
                                             statusPanel.AppendText("SUPERVISORY,  " + ",  " + address[i] + ",  " +
                                             areaID[i].Replace("ZONE ", "Z") + ", " + areaLabel[i] + ", " + addressLabel[i] + fm200 + "\n");
                                             statusPanel.ScrollToCaret();
-                                            if (statusPanel.Lines.Count() < 30)
-                                                Helper.ColorLine("SUPERVISORY", statusPanel);
+                                        }));
+                                        break;
+                                    }
+                                }
+                            }
+                            if (containActive & !containCLR & !containAck)
+                            {
+
+                                for (int i = 1; i < areaID.Count(); i++)
+                                {
+                                    if (signal_module_sp == "")
+                                    {
+                                        statusPanel.Invoke(new Action(() => {
+                                            string panelNum = address[4].Substring(0, 4);
+                                            Helper.TxtColor2(statusPanel, Color.IndianRed);
+                                            statusPanel.AppendText("ACTIVE SUPERVISORY,  " + panelNum + ",  " + lines[1 + portPanelType] + fm200 + "\n");
+                                            statusPanel.ScrollToCaret();
+                                        }));
+                                        break;
+                                    }
+                                    if (address[i].Contains(signal_module_sp) & address[i].Contains(currNode))
+                                    {
+                                        statusPanel.Invoke(new Action(() => {
+                                            Helper.TxtColor2(statusPanel, Color.IndianRed);
+                                            statusPanel.AppendText("ACTIVE SUPERVISORY,  " + ",  " + address[i] + ",  " +
+                                            areaID[i].Replace("ZONE ", "Z") + ", " + areaLabel[i] + ", " + addressLabel[i] + fm200 + "\n");
+                                            statusPanel.ScrollToCaret();
                                         }));
                                         break;
                                     }
@@ -1382,23 +1501,24 @@ namespace Airport_GA
                         alarmLog.Invoke(new Action(() => {
                             if (alarmLog.Lines.Count() > 6)
                             {
-                                Helper.HighlightLineContaining(alarmLog, alarmLog.Lines.Count() - 5, "WAITING", Color.Black);
-                                Helper.HighlightLineContaining(alarmLog, alarmLog.Lines.Count() - 4, "WAITING", Color.Black);
-                                Helper.HighlightLineContaining(alarmLog, alarmLog.Lines.Count() - 3, "WAITING", Color.Black);
-                                Helper.HighlightLineContaining(alarmLog, alarmLog.Lines.Count() - 2, "WAITING", Color.Black);
-                                Helper.HighlightLineContaining(alarmLog, alarmLog.Lines.Count() - 1, "WAITING", Color.Black);
-
+                                if (alarmLog.Lines[alarmLog.Lines.Count()-2].Contains("WAITING"))
+                                {
+                                    int firstCharIndx = alarmLog.GetFirstCharIndexOfCurrentLine();
+                                    int length = alarmLog.Lines[alarmLog.Lines.Count()-2].Length;
+                                    alarmLog.SelectionStart = firstCharIndx;
+                                    alarmLog.SelectionLength = length;
+                                    alarmLog.SelectionColor = Color.Black;
+                                }
                             }
                             string line = lineCount + "|" + completeSignal + " " + signal_module;
 
                             line_list = line.Split('|');
                             string line_sig_type = "";
-                            if (int.TryParse(line_list[0], out _))
-                                line_sig_type = line_list[1].Trim()+ " " +line_list[2].Trim();
-                            else
-                                line_sig_type = line_list[0].Trim()+ " " +line_list[1].Trim();
-                            if (is_Com1_3030 & line_list.Count() > 3)
-                                line_sig_type = line_sig_type + " " + line_list[2].Trim();
+                            foreach (string s in line_list)
+                                if (int.TryParse(s, out _) | s.Contains("day") | s.Contains("PM") | s.Contains("AM"))
+                                    continue;
+                                else
+                                    line_sig_type += s.Trim() + " ";
                             string loop = "1";
                             string module = modNum640.Match(line).ToString();
                             if (module.Contains("L"))
@@ -1576,6 +1696,8 @@ namespace Airport_GA
                 Helper.BackupRestoreZones(alarmLEDs[i], alarmLEDs_temp[i], alarmSquare[i], alarmSquare_temp[i], alarmMultiPoint[i], alarmMultiPoint_temp[i], realRotationCounter, drawing_count);
                 Helper.BackupRestoreZones(troubleLEDs[i], troubleLEDs_temp[i], troubleSquare[i], troubleSquare_temp[i], troubleMultiPoint[i], troubleMultiPoint_temp[i], realRotationCounter, drawing_count);
                 Helper.BackupRestoreZones(superLEDs[i], superLEDs_temp[i], superSquare[i], superSquare_temp[i], superMultiPoint[i], superMultiPoint_temp[i], realRotationCounter, drawing_count);
+                Helper.BackupRestoreZones(activeLEDs[i], activeLEDs_temp[i], activeSquare[i], activeSquare_temp[i], activeMultiPoint[i], activeMultiPoint_temp[i], realRotationCounter, drawing_count);
+
             }
 
             if (rotationCounter >= images.Count)
@@ -1590,7 +1712,7 @@ namespace Airport_GA
                 finalLines.RemoveAll(x => x.Contains(word) & x.Contains(sigType));
                 statusPanel.Lines = finalLines.ToArray();
                 if (statusPanel.Lines.Count() < 30)
-                    Helper.ColorLine(sigType, statusPanel);
+                    Helper.ColorLine(statusPanel);
             }));
 
         }
