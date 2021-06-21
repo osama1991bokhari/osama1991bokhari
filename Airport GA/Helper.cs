@@ -35,6 +35,8 @@ namespace Airport_GA
                     rtb.SelectionColor = Color.Orange;
                 else if (line.StartsWith("SUPERV") | line.StartsWith("ACTIVE"))
                     rtb.SelectionColor = Color.IndianRed;
+                else if (line.StartsWith("SECURITY"))
+                    rtb.SelectionColor = Color.DodgerBlue;
                 else
                     rtb.SelectionColor = Color.Gold;
                 rtb.Select(firstCharIndx + length + 1, 0);

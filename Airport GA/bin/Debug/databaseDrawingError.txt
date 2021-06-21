@@ -10,3 +10,17 @@ System.OutOfMemoryException: Out of memory.
  : [!377]  ,  
 
 
+System.ArgumentOutOfRangeException: Length cannot be less than zero.
+Parameter name: length
+   at System.String.InternalSubStringWithChecks(Int32 startIndex, Int32 length, Boolean fAlwaysCopy)
+   at Airport_GA.Form1.InitTimer() in D:\Desktops\ATC\Airport GA\Airport GA\Form1.cs:line 364
+ : [!377]  , 12:46:29 PM
+
+
+System.ArgumentOutOfRangeException: Length cannot be less than zero.
+Parameter name: length
+   at System.String.InternalSubStringWithChecks(Int32 startIndex, Int32 length, Boolean fAlwaysCopy)
+   at Airport_GA.Form1.InitTimer() in D:\Desktops\ATC\Airport GA\Airport GA\Form1.cs:line 364
+ : [!377]  , 08:53:54 AM
+
+

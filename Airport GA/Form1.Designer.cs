@@ -201,6 +201,7 @@ namespace Airport_GA
             this.gaca_logo.SizeMode = System.Windows.Forms.PictureBoxSizeMode.StretchImage;
             this.gaca_logo.TabIndex = 0;
             this.gaca_logo.TabStop = false;
+            this.gaca_logo.Click += new System.EventHandler(this.gaca_logo_Click);
             // 
             // floor
             // 
