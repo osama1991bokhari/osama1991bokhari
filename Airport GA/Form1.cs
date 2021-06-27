@@ -191,6 +191,7 @@ namespace Airport_GA
         static bool blink1 = true;
         static bool blinkYouAreHere = true;
         static bool pauseRotat = false;
+        static bool busy = false;
         static int gf_idx = 0;
         static int rotationCounter = 0;
         LinkedList<int> priorityFloor = new LinkedList<int>();
@@ -203,13 +204,11 @@ namespace Airport_GA
         Regex modNum3030 = new Regex(@"L\d{2}([D,M])\d{3}");
         Regex modNum640 = new Regex(@"\d{1}([D,M])\d{3}");
 
-        Regex separator3030 = new Regex(@"\d{2},\s\d{4}");//???
-        Regex separator640 = new Regex(@"\d{6}");
-        Regex troubles = new Regex(@"TROUBL");
-        Regex clrTroubles = new Regex(@"CLR TB|CLEARED TROUBL");
-
         Regex modCode = new Regex(@"GEN ALARM|GEN TROUBL");
         Regex powerModule = new Regex(@"L\d{2}M15[5-9]");
+
+        Regex sep3030 = new Regex(@"\d{2},\s\d{4}\s{2,}L\d{2}[M,D]\d{3}|\d{2},\s\d{4}\s{2,}");
+        Regex sep640 = new Regex(@"\d{6}\s{1,}[A-Z][a-z][a-z]|\d{6}\s{1,}\d[M,D]\d{3}");
 
         private static string logFile = "LogFile.txt";
         private static string database = "";
@@ -804,7 +803,7 @@ namespace Airport_GA
         }
         private void Timer3_Tick_Rotation(object sender, EventArgs e)
         {
-            if(drawing_count!=1)
+            if(drawing_count!=1& ! busy)
                 drawingRotate();
         }
         private void Minimize(object sender, EventArgs e)
@@ -835,65 +834,51 @@ namespace Airport_GA
                     sw.Write(signal1);
                     sw.Close();
                 }
-                bool line_640 = !is_Com1_3030 & (Regex.IsMatch(lineCom1, @"\d{6} "));
-                bool line_3030_no_module = is_Com1_3030 & Regex.IsMatch(lineCom1, @"\d{2},\s\d{4}") & !lineCom1.Contains("L0");
-                bool line_3030_contains_moduel = false;
-            try {
-                    line_3030_contains_moduel = is_Com1_3030 & Regex.IsMatch(lineCom1, @"\d{2},\s\d{4}") &
-                        Regex.IsMatch(lineCom1.Substring(separator3030.Match(lineCom1).Index), @"L\d{2}([D,M])\d{3}");
-                }
-            catch { }
+                bool line_640 = !is_Com1_3030 & sep640.IsMatch(lineCom1);
+                bool line_3030_no_module = is_Com1_3030 & sep3030.IsMatch(lineCom1);
                 // check if we have a complete signal
-                if (line_640 | line_3030_no_module | line_3030_contains_moduel| lineCom1.Contains("NORMAL")| lineCom1.Contains("RESET"))
+                if (line_640 | line_3030_no_module)
                 {
-                    bool clear = true;
-                    if (lineCom1.Contains("NORMAL"))
-                        if((Regex.IsMatch(lineCom1.Substring(lineCom1.IndexOf("NORMAL")), @"\d{2},\s\d{4}")) |
-                        Regex.IsMatch(lineCom1.Substring(lineCom1.IndexOf("NORMAL")), @"\d{6}"))
-                            lineCom1 = "SYSTEM NORMAL                             "+defaultTime;
-                    if (lineCom1.Contains("RESET"))
-                        if((Regex.IsMatch(lineCom1.Substring(lineCom1.IndexOf("RESET")), @"\d{2},\s\d{4}") |
-                        Regex.IsMatch(lineCom1.Substring(lineCom1.IndexOf("RESET")), @"\d{6}")))
-                            lineCom1 = "SYSTEM RESET                             "+defaultTime;
-                    if(lineCom1.Contains("PLEASE WAIT")&!is_Com1_3030)
+                    if(lineCom1.Contains("PLEASE WAIT"))
                     {
-                        lineCom1 = Process_signal(lineCom1);
-                        lineCom1 = "TROUBL IN SYSTEM    Sys Initialization                       03:18P 060321 Thu  ";
+                        Process_signal("SYSTEM NORMAL                             " + defaultTime);
+                        if (!is_Com1_3030) {
+                            lineCom1 = Process_signal(lineCom1);
+                            lineCom1 = "TROUBL IN SYSTEM    Sys Initialization                       03:18P 060321 Thu  "; }
                     }
-                    List<string> sb = new List<string>();
-                    if (clrTroubles.Matches(lineCom1).Count > 1)
+                    int i = 0;
+                    int q = 0;
+                    string remainder = "";
+                    if (sep3030.Matches(lineCom1).Count > 1)
                     {
-                        if(lineCom1.Contains("Sys Initialization"))
-                            Process_signal("TROUBL IN SYSTEM    Sys Initialization                       03:18P 060321 Thu  ");
-                        foreach (Match match in clrTroubles.Matches(lineCom1))
-                            if (Regex.IsMatch(lineCom1.Substring(match.Index), @"\d{2},\s\d{4}") | Regex.IsMatch(lineCom1.Substring(match.Index), @"\d{6}"))
-                                Process_signal(lineCom1.Substring(match.Index));
-                            else
-                            {
-                                clear = false;
-                                lineCom1 = lineCom1.Substring(match.Index);
-                            }
-
-                        if (clear)
-                            lineCom1 = "";
+                        foreach (Match match in sep3030.Matches(lineCom1))
+                        {
+                        i = match.Index;
+                        Process_signal(lineCom1.Substring(q, i + match.Length - q));
+                        remainder = lineCom1.Substring(i + match.Length);
+                        q = i + match.Length;
+                        }
                     }
-                    else if (troubles.Matches(lineCom1).Count > 1) {
-                        foreach (Match match in troubles.Matches(lineCom1))
-                            if (!lineCom1.Substring(match.Index).StartsWith("TROUBLE_MON"))
-                            { 
-                                if (Regex.IsMatch(lineCom1.Substring(match.Index), @"\d{2},\s\d{4}")| Regex.IsMatch(lineCom1.Substring(match.Index), @"\d{6}"))
-                                    Process_signal(lineCom1.Substring(match.Index));
-                                else
-                                {
-                                    clear = false;
-                                    lineCom1 = lineCom1.Substring(match.Index);
-                                }
-                            }
-                        if(clear)
-                            lineCom1 = "";
+                    else if (sep640.Matches(lineCom1).Count > 1)
+                    {
+                        foreach (Match match in sep640.Matches(lineCom1))
+                        {
+                        i = match.Index;
+                        Process_signal(lineCom1.Substring(q, i + match.Length - q));
+                        remainder = lineCom1.Substring(i + match.Length);
+                        q = i + match.Length;
+                        }
                     }
-                    else if(Regex.IsMatch(lineCom1, @"\d{2},\s\d{4}") | Regex.IsMatch(lineCom1, @"\d{6}"))
-                    lineCom1 = Process_signal(lineCom1);
+                    else if(sep640.IsMatch(lineCom1)) { 
+                        Process_signal(lineCom1);
+                        remainder = lineCom1.Substring(sep640.Match(lineCom1).Index + sep640.Match(lineCom1).Length);
+                    }
+                    else if (sep3030.IsMatch(lineCom1))
+                    {
+                        Process_signal(lineCom1);
+                        remainder = lineCom1.Substring(sep3030.Match(lineCom1).Index + sep3030.Match(lineCom1).Length);
+                    }
+                    lineCom1 = remainder;
                 }
             }
             catch (Exception ex)
@@ -928,13 +913,14 @@ namespace Airport_GA
             completeSignal = Regex.Replace(completeSignal, @"\d{2}:\d{2}[A-Z]\s\d{6}\s[A-z]{3}", "");//removes panel time640
             completeSignal = Regex.Replace(completeSignal, @"\s{2,}", "|");//replace 2 or more white space with bars
             completeSignal = Regex.Replace(completeSignal, @"\n|\r|IN SYSTEM|GEN ALARM|GEN TROUBL", "");//remove space and some words
+            completeSignal = Regex.Replace(completeSignal, @"TROUBLE REMINDER", "REMINDER");//remove space and some words
             if(!completeSignal.Contains("ACTIVE TRACK SUPERV") & !completeSignal.Contains("CLR ACT"))
                 completeSignal = completeSignal.Replace("TRACK SUPERV", "TRACK SUPRVISORY");
             if (completeSignal[0] == '|')
                 completeSignal = completeSignal.Substring(1);
             string[] lines = completeSignal.Split('|');
             bool startWithAlarm = completeSignal.StartsWith("ALARM") | completeSignal.StartsWith("FIRE ALARM");
-            bool startWithTrouble = completeSignal.StartsWith("TROUBL") & !completeSignal.StartsWith("TROUBLE_MON");
+            bool startWithTrouble = completeSignal.StartsWith("TROUBL") & (!completeSignal.StartsWith("TROUBLE_MON")| !completeSignal.StartsWith("TROUBLE MON"));
             bool containSuper = completeSignal.Contains("SUPERV");
             bool containActive = completeSignal.Contains("ACTIVE WATERFLOW_S") | completeSignal.Contains("ACTIVE TAMPER");
             bool containAck = completeSignal.Contains("ACKN") | completeSignal.Contains("ACKED");
@@ -1062,6 +1048,7 @@ namespace Airport_GA
             }
             if (containCLRTB)
             {
+                busy = true;
                 if (signal_zone != "")//if database contains battry, AC, etc.. remove it.
                 {
                     if (multiPointZoneLabel[drawingNum].Contains(signal_zone))
@@ -1136,6 +1123,7 @@ namespace Airport_GA
             }
             if (containCLR & containSuper)
             {
+                busy = true;
                 if (signal_zone != "")
                 {
                     if (multiPointZoneLabel[drawingNum].Contains(signal_zone))
@@ -1274,7 +1262,7 @@ namespace Airport_GA
 
 
             }
-
+            busy = true;
             if (alarm[currNodeIndx] | trouble[currNodeIndx] | super[currNodeIndx] | active[currNodeIndx])
             {
                 string fm200 = "";
@@ -1407,7 +1395,7 @@ namespace Airport_GA
                                     {
                                         statusPanel.Invoke(new Action(() => { 
                                         Helper.TxtColor2(statusPanel, Color.Orange);
-                                        statusPanel.AppendText("TROUBLE,  " + ",  " + address[i] + ",  " +
+                                        statusPanel.AppendText("TROUBLE,  " + address[i] + ",  " +
                                             areaID[i].Replace("ZONE ", "Z") + ", " + areaLabel[i] + ", " + addressLabel[i] + fm200 + "\n");
                                             statusPanel.ScrollToCaret();
                                         }));
@@ -1482,6 +1470,7 @@ namespace Airport_GA
                         }
                     }
             }
+            busy = false;
             // Writning to log file
             try
                 { 
@@ -1686,6 +1675,7 @@ namespace Airport_GA
         
         private void drawingRotate()
         {
+
             if(!pauseRotat)
             if (priorityFloor.Count == 0 | priorityFloor.Count == images.Count)
                 rotationCounter++;
@@ -1720,6 +1710,8 @@ namespace Airport_GA
                 statusPanel.Lines = finalLines.ToArray();
                 if (statusPanel.Lines.Count() < 30)
                     Helper.ColorLine(statusPanel);
+                statusPanel.Select(statusPanel.Text.Length,0);
+                statusPanel.ScrollToCaret();
             }));
 
         }
