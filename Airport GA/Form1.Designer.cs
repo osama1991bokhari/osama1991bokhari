@@ -330,7 +330,7 @@ namespace Airport_GA
             this.exit.TabIndex = 9;
             this.exit.Text = "Exit";
             this.exit.UseVisualStyleBackColor = false;
-            this.exit.Click += new System.EventHandler(this.Button1_Click);
+            this.exit.Click += new System.EventHandler(this.Exit_Click);
             // 
             // troubleLED
             // 

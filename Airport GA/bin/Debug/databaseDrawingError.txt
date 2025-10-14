@@ -1,26 +1,21 @@
-System.OutOfMemoryException: Out of memory.
-   at System.Drawing.Image.FromFile(String filename, Boolean useEmbeddedColorManagement)
-   at Airport_GA.Form1.InitTimer() in D:\Desktops\ATC\Airport GA\Airport GA\Form1.cs:line 327
- : [!377]  ,  
+System.Collections.Generic.KeyNotFoundException: The given key was not present in the dictionary.
+   at System.ThrowHelper.ThrowKeyNotFoundException()
+   at System.Collections.Generic.Dictionary`2.get_Item(TKey key)
+   at Airport_GA.Form1.LoadAllData() in C:\Users\osama\Desktop\ATC\Airport GA\Airport GA\Form1.cs:line 1552
+ : [!377]  , 04:28:38 PM
 
 
-System.OutOfMemoryException: Out of memory.
-   at System.Drawing.Image.FromFile(String filename, Boolean useEmbeddedColorManagement)
-   at Airport_GA.Form1.InitTimer() in D:\Desktops\ATC\Airport GA\Airport GA\Form1.cs:line 327
- : [!377]  ,  
+System.Collections.Generic.KeyNotFoundException: The given key was not present in the dictionary.
+   at System.ThrowHelper.ThrowKeyNotFoundException()
+   at System.Collections.Generic.Dictionary`2.get_Item(TKey key)
+   at Airport_GA.Form1.LoadAllData() in C:\Users\osama\Desktop\ATC\Airport GA\Airport GA\Form1.cs:line 1552
+ : [!377]  , 04:29:23 PM
 
 
-System.ArgumentOutOfRangeException: Length cannot be less than zero.
-Parameter name: length
-   at System.String.InternalSubStringWithChecks(Int32 startIndex, Int32 length, Boolean fAlwaysCopy)
-   at Airport_GA.Form1.InitTimer() in D:\Desktops\ATC\Airport GA\Airport GA\Form1.cs:line 364
- : [!377]  , 12:46:29 PM
-
-
-System.ArgumentOutOfRangeException: Length cannot be less than zero.
-Parameter name: length
-   at System.String.InternalSubStringWithChecks(Int32 startIndex, Int32 length, Boolean fAlwaysCopy)
-   at Airport_GA.Form1.InitTimer() in D:\Desktops\ATC\Airport GA\Airport GA\Form1.cs:line 364
- : [!377]  , 08:53:54 AM
+System.Collections.Generic.KeyNotFoundException: The given key was not present in the dictionary.
+   at System.ThrowHelper.ThrowKeyNotFoundException()
+   at System.Collections.Generic.Dictionary`2.get_Item(TKey key)
+   at Airport_GA.Form1.LoadAllData() in C:\Users\osama\Desktop\ATC\Airport GA\Airport GA\Form1.cs:line 1552
+ : [!377]  , 04:30:58 PM
 
 

@@ -108,3 +108,14 @@ D:\Desktops\ATC\Airport GA\Airport GA\obj\Debug\Airport GA.pdb
 D:\Desktops\ATC\Airport GA\Airport GA\bin\Debug\Airport GA.exe.config
 D:\Desktops\ATC\Airport GA\Airport GA\bin\Debug\Airport GA.exe
 D:\Desktops\ATC\Airport GA\Airport GA\bin\Debug\Airport GA.pdb
+C:\Users\osama\Desktop\ATC\Airport GA\Airport GA\bin\Debug\Airport GA.exe.config
+C:\Users\osama\Desktop\ATC\Airport GA\Airport GA\bin\Debug\Airport GA.exe
+C:\Users\osama\Desktop\ATC\Airport GA\Airport GA\bin\Debug\Airport GA.pdb
+C:\Users\osama\Desktop\ATC\Airport GA\Airport GA\obj\Debug\Airport GA.csproj.AssemblyReference.cache
+C:\Users\osama\Desktop\ATC\Airport GA\Airport GA\obj\Debug\Airport GA.exe.config
+C:\Users\osama\Desktop\ATC\Airport GA\Airport GA\obj\Debug\Airport_GA.Form1.resources
+C:\Users\osama\Desktop\ATC\Airport GA\Airport GA\obj\Debug\Airport_GA.Properties.Resources.resources
+C:\Users\osama\Desktop\ATC\Airport GA\Airport GA\obj\Debug\Airport GA.csproj.GenerateResource.cache
+C:\Users\osama\Desktop\ATC\Airport GA\Airport GA\obj\Debug\Airport GA.csproj.CoreCompileInputs.cache
+C:\Users\osama\Desktop\ATC\Airport GA\Airport GA\obj\Debug\Airport GA.exe
+C:\Users\osama\Desktop\ATC\Airport GA\Airport GA\obj\Debug\Airport GA.pdb

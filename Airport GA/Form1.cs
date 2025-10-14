@@ -48,11 +48,11 @@ namespace Airport_GA
                             }
                         }
                     }
-                        
+
                 }
 
             }
-            if (!blinkYouAreHere & rotationCounter == gf_idx)
+            if (!blinkYouAreHere & rotationCounter == ga_idx)
             {
                 float x = resolution.Width / 1920;
                 float y = resolution.Height / 1080;
@@ -63,48 +63,13 @@ namespace Airport_GA
             //if (rotationCounter != 1)
             //    e.Graphics.DrawImage(pngImg[rotationCounter], new RectangleF(0, 0, drawing.Size.Width, drawing.Size.Height));
         }
-        void PictureBox_Paint_troubl(object sender, PaintEventArgs e)
-        {
-            if (!blink1)
-            {
-                using (Pen p = new Pen(Color.Yellow, borderSize))
-                {
-                    for (int i = 0; i < nodeCount; i++)
-                    {
-                        foreach (List<RectangleF> Led in troubleLEDs[i].ToList())
-                        {
-                            foreach (RectangleF r in Led.ToList())
-                            {
-                                e.Graphics.FillRectangle(Brushes.Yellow, r);
-                            }
-                        }
-                        foreach (List<RectangleF> uniform in troubleSquare[i].ToList())
-                        {
-                            foreach (RectangleF r in uniform.ToList())
-                            {
-                                e.Graphics.DrawRectangle(p, Rectangle.Round(r));
-                            }
-                        }
-                        foreach (List<PointF[]> unUniform in troubleMultiPoint[i].ToList())
-                        {
-                            foreach (PointF[] r in unUniform.ToList())
-                            {
-                                e.Graphics.DrawLines(p, r);
-                            }
-                        }
-                    }
-                        
-
-                }
-            }
-        }
         void PictureBox_Paint_super(object sender, PaintEventArgs e)
         {
             if (!blink1)
             {
                 using (Pen p = new Pen(Color.IndianRed, borderSize))
                 {
-                    for(int i =0;i < nodeCount; i++)
+                    for (int i = 0; i < nodeCount; i++)
                     {
                         foreach (List<RectangleF> Led in superLEDs[i].ToList())
                         {
@@ -164,16 +129,44 @@ namespace Airport_GA
                 }
             }
         }
+        void PictureBox_Paint_troubl(object sender, PaintEventArgs e)
+        {
+            if (!blink1)
+            {
+                using (Pen p = new Pen(Color.Yellow, borderSize))
+                {
+                    for (int i = 0; i < nodeCount; i++)
+                    {
+                        foreach (List<RectangleF> Led in troubleLEDs[i].ToList())
+                        {
+                            foreach (RectangleF r in Led.ToList())
+                            {
+                                e.Graphics.FillRectangle(Brushes.Yellow, r);
+                            }
+                        }
+                        foreach (List<RectangleF> uniform in troubleSquare[i].ToList())
+                        {
+                            foreach (RectangleF r in uniform.ToList())
+                            {
+                                e.Graphics.DrawRectangle(p, Rectangle.Round(r));
+                            }
+                        }
+                        foreach (List<PointF[]> unUniform in troubleMultiPoint[i].ToList())
+                        {
+                            foreach (PointF[] r in unUniform.ToList())
+                            {
+                                e.Graphics.DrawLines(p, r);
+                            }
+                        }
+                    }
 
+
+                }
+            }
+        }
         private void Form1_Load(object sender, EventArgs e)
         {
             InitTimer();
-        }
-        private void Button1_Click(object sender, EventArgs e)
-        {
-            if (clrHist.Checked)
-                System.IO.File.WriteAllText(logFile, string.Empty);
-            Application.Exit();
         }
 
         private Timer timer100;//for boarder blinking
@@ -183,7 +176,6 @@ namespace Airport_GA
         static int currNodeIndx;
         static string currNode;
         static string currFACP = "";
-        static int portPanelType = 0;
         static int panelType = 0;
         static int restartTimer = 0;
         static string defaults = "";
@@ -192,8 +184,9 @@ namespace Airport_GA
         static bool blinkYouAreHere = true;
         static bool pauseRotat = false;
         static bool busy = false;
-        static int gf_idx = 0;
+        static int ga_idx = 0;
         static int rotationCounter = 0;
+        static int signalIdelCounter = 0;
         LinkedList<int> priorityFloor = new LinkedList<int>();
 
         static int borderSize = 10;
@@ -205,7 +198,7 @@ namespace Airport_GA
         Regex modNum640 = new Regex(@"\d{1}([D,M])\d{3}");
 
         Regex modCode = new Regex(@"GEN ALARM|GEN TROUBL");
-        Regex powerModule = new Regex(@"L\d{2}M15[5-9]");
+        Regex powerModule = new Regex(@"L\d{2}M1[4,5][5-9]");
 
         Regex sep3030 = new Regex(@"\d{2},\s\d{4}\s{2,}L\d{2}[M,D]\d{3}|\d{2},\s\d{4}\s{2,}");
         Regex sep640 = new Regex(@"\d{6}\s{1,}[A-Z][a-z][a-z]|\d{6}\s{1,}\d[M,D]\d{3}");
@@ -213,11 +206,11 @@ namespace Airport_GA
         private static string logFile = "LogFile.txt";
         private static string database = "";
         private Image youAreHere = Image.FromFile("pin-icon-460px.png");
-        List<string> images = Directory.GetFiles("img", "*.png*", SearchOption.AllDirectories).OrderBy(f => f).ToList();
-        List<string> zonesCSV = Directory.GetFiles("zones", "*.csv*", SearchOption.AllDirectories).OrderBy(f => f).ToList();
-        List<string> nodes = new List<string>();
+        List<string> images;
+        List<string> zonesCSV;
+        List<string> nodes;
 
-        List <List<List<RectangleF>>> alarmLEDs = new List<List<List<RectangleF>>>();
+        List<List<List<RectangleF>>> alarmLEDs = new List<List<List<RectangleF>>>();
         List<List<List<RectangleF>>> troubleLEDs = new List<List<List<RectangleF>>>();
         List<List<List<RectangleF>>> superLEDs = new List<List<List<RectangleF>>>();
         List<List<List<RectangleF>>> activeLEDs = new List<List<List<RectangleF>>>();
@@ -292,264 +285,22 @@ namespace Airport_GA
 
         List<int> troubleCount = new List<int>();
         List<int> superCount = new List<int>();
+        List<int> activeCount = new List<int>();
         RectangleF resolution = Screen.PrimaryScreen.Bounds;
+
+
+
+        /// <summary>
+        /// 
+        /// Functions for GA
+        /// 
+        /// </summary>
+
+
         public void InitTimer()
         {
-            using (var reader = new StreamReader("drawingMapping.txt"))
-            {
-                while (!reader.EndOfStream)
-                {
-                    var line = reader.ReadLine();
-                    var values = line.Split('|');
-                    floorInDrawing.Add(values[0], Int32.Parse(values[1]));
-                }
-            }
-            
-            using (StreamReader sr = File.OpenText("Default.txt"))
-            {
-                defaults = sr.ReadLine();
-                sr.Close();
-            }
-            string[] defaultSetting = defaults.Split('|');
-            switch (defaultSetting[1])
-            {
-                case "3030":
-                    panelType = 0;
-                    break;
-                case "640":
-                    panelType = 1;
-                    break;
-            }
-
-            //log_hash = Helper.GetMD5HashFromFile(logFile);
-            try // Loading Database and Drawings
-            {
-                drawing.Image = Image.FromFile(images[0]);
-                switch (defaultSetting[0])
-                {
-                    case "s":
-                        drawing.SizeMode = System.Windows.Forms.PictureBoxSizeMode.StretchImage;
-                        break;
-                    case "z":
-                        drawing.SizeMode = System.Windows.Forms.PictureBoxSizeMode.Zoom;
-                        break;
-                    case "c":
-                        var imageSize = drawing.Image.Size;
-                        var fitSize = drawing.ClientSize;
-                        drawing.SizeMode = imageSize.Width > fitSize.Width || imageSize.Height > fitSize.Height ?
-                            PictureBoxSizeMode.Zoom : PictureBoxSizeMode.CenterImage;
-                        break;
-                }
-                foreach (string imgDir in images)
-                {
-                    if (imgDir.Contains("png")) { 
-                    pngImg.Add(Image.FromFile(imgDir));
-                    pngName.Add(imgDir.Split('_')[1].Split('.')[0].Replace('^','.'));}
-                }
-                gf_idx = pngName.IndexOf("Ground Floor");
-                database = Directory.GetFiles("database", "*.csv")[0];
-                using (var reader = new StreamReader(database))
-                {
-
-                    while (!reader.EndOfStream)
-                    {
-                        var line = reader.ReadLine();
-                        var values = line.Split(',');
-                        first_column.Add(values[0]);
-                        areaID.Add(values[1]);
-                        address.Add(values[2]);
-                        addressLabel.Add(values[3]);
-                        areaLabel.Add(values[4]);
-                        if (values[1].Contains("ZONE")) { 
-                        string nodeNum = values[2].Substring(1, values[2].IndexOf("L") - 1);
-                        if (!nodes.Contains(nodeNum))
-                            nodes.Add(nodeNum);}
-                    }
-                    label6.Text = label6.Text + nodes[0];
-                    building_label.Text = first_column[0].Replace('|', ',');
-                    databaseLED.BackColor = System.Drawing.Color.Lime;
-                    databaseLED.Text = "DataBase is OK";
-                }
-            }
-            catch(Exception ex)
-            {
-                MessageBox.Show("Unable to read Database file or Drawings'" + database + "'", "Error reading database file", MessageBoxButtons.OK, MessageBoxIcon.Error);
-                using (StreamWriter sw = File.AppendText("databaseDrawingError.txt"))
-                {
-                    sw.WriteLine(ex + "\n : [!377] " + time.Text + ", " + DateTime.Now.ToString("hh:mm:ss tt") + "\n\n");
-                    sw.Close();
-                }
-            }
-
-            drawing_count = images.Count;
-            // initialize the alarm, trouble and super for the LED, uniform and unUniform
-            for(int i = 0; i < nodeCount; i++)
-            {
-                alarmLEDs.Add(new List<List<RectangleF>>());
-                troubleLEDs.Add(new List<List<RectangleF>>());
-                superLEDs.Add(new List<List<RectangleF>>());
-                activeLEDs.Add(new List<List<RectangleF>>());
-
-                alarmLEDs_temp.Add(new List<List<RectangleF>>());
-                troubleLEDs_temp.Add(new List<List<RectangleF>>());
-                superLEDs_temp.Add(new List<List<RectangleF>>());
-                activeLEDs_temp.Add(new List<List<RectangleF>>());
-
-                alarmSquare.Add(new List<List<RectangleF>>());
-                troubleSquare.Add(new List<List<RectangleF>>());
-                superSquare.Add(new List<List<RectangleF>>());
-                activeSquare.Add(new List<List<RectangleF>>());
-
-                alarmSquare_temp.Add(new List<List<RectangleF>>());
-                troubleSquare_temp.Add(new List<List<RectangleF>>());
-                superSquare_temp.Add(new List<List<RectangleF>>());
-                activeSquare_temp.Add(new List<List<RectangleF>>());
-
-                alarmMultiPoint.Add(new List<List<PointF[]>>());
-                troubleMultiPoint.Add(new List<List<PointF[]>>());
-                superMultiPoint.Add(new List<List<PointF[]>>());
-                activeMultiPoint.Add(new List<List<PointF[]>>());
-
-                alarmMultiPoint_temp.Add(new List<List<PointF[]>>());
-                troubleMultiPoint_temp.Add(new List<List<PointF[]>>());
-                superMultiPoint_temp.Add(new List<List<PointF[]>>());
-                activeMultiPoint_temp.Add(new List<List<PointF[]>>());
-            }
-            // Loading Zones Border, Led and youAreHere.
-            try
-            {
-                for(int i = 0; i < drawing_count; i++)
-                {
-                    // initalize the dictionaries with the number of drawing (set the list size)
-                    zoneLEDCoord.Add(new Dictionary<string, RectangleF>());
-                    squareZoneCoord.Add(new Dictionary<string, RectangleF>());
-                    multiPointZoneCoord.Add(new Dictionary<string, PointF[]>());
-                    // initalize the List size with the number of drawing
-                    ledZoneLabel.Add(new List<string>());
-                    ledZone.Add(new List<string>());
-                    squareZoneLabel.Add(new List<string>());
-                    squareZone.Add(new List<string>());
-                    multiPointZoneLabel.Add(new List<string>());
-                    multiPointZone.Add(new List<string>());
-                    alarm.Add(new bool());
-                    trouble.Add(new bool());
-                    super.Add(new bool());
-                    active.Add(new bool());
-                    troubleCount.Add(new int());
-                    superCount.Add(new int());
-                    
-
-                    using (var reader = new StreamReader(zonesCSV[i]))
-                    {
-                        
-
-                        while (!reader.EndOfStream)
-                        {
-                            var line = reader.ReadLine();
-                            var values = line.Split(',');
-                            ledZoneLabel[i].Add(values[0]);
-                            ledZone[i].Add(values[1]);
-                        }
-                    }
-                    using (var reader = new StreamReader(zonesCSV[i + drawing_count]))
-                    {
-
-                        while (!reader.EndOfStream)
-                        {
-                            var line = reader.ReadLine();
-                            var values = line.Split(',');
-                            squareZoneLabel[i].Add(values[0]);
-                            squareZone[i].Add(values[1]);
-                        }
-                    }
-                    using (var reader = new StreamReader(zonesCSV[i + drawing_count * 2]))
-                    {
-
-                        while (!reader.EndOfStream)
-                        {
-                            var line = reader.ReadLine();
-                            var values = line.Split(',');
-                            multiPointZoneLabel[i].Add(values[0]);
-                            multiPointZone[i].Add(values[1]);
-                        }
-                    }
-
-                }
-            }
-            catch(Exception ex)
-            {
-                MessageBox.Show("Unable to process Database data'" + database + "'", "Error reading database file", MessageBoxButtons.OK, MessageBoxIcon.Error);
-                using (StreamWriter sw = File.AppendText("databaseProcessingError.txt"))
-                {
-                    sw.WriteLine(ex + "\n : [!377] " + time.Text + ", " + DateTime.Now.ToString("hh:mm:ss tt") + "\n\n");
-                    sw.Close();
-                }
-            }
-            try
-            {
-                using (var reader = new StreamReader(zonesCSV[drawing_count * 3]))
-                {
-
-                    while (!reader.EndOfStream)
-                    {
-                        var line = reader.ReadLine();
-                        var values = line.Split(',');
-                        youAreHereCoord.Add(values[0]);
-                        var sizes = values[1].Split('|');
-                        led_size = Int32.Parse(sizes[0]);
-                        borderSize = Int32.Parse(sizes[1]);
-                    }
-                }
-                youAreHereInt = youAreHereCoord[0].Split('|').Select(Int32.Parse).ToList();
-            }
-            catch
-            {
-                MessageBox.Show("Unable to process data YouAreHere'" + database + "'", "Error reading youAreHere file", MessageBoxButtons.OK, MessageBoxIcon.Error);
-            }
-
-            try 
-            {
-                // Initialize the list of lists with 3 lists
-                for (int i = 0; i < drawing_count; i++)
-                {
-                    for (int j = 0; j < nodeCount; j++)
-                    {
-                        alarmLEDs[j].Add(new List<RectangleF>());
-                        troubleLEDs[j].Add(new List<RectangleF>());
-                        superLEDs[j].Add(new List<RectangleF>());
-                        activeLEDs[j].Add(new List<RectangleF>());
-
-                        alarmLEDs_temp[j].Add(new List<RectangleF>());
-                        troubleLEDs_temp[j].Add(new List<RectangleF>());
-                        superLEDs_temp[j].Add(new List<RectangleF>());
-                        activeLEDs_temp[j].Add(new List<RectangleF>());
-
-                        alarmSquare[j].Add(new List<RectangleF>());
-                        troubleSquare[j].Add(new List<RectangleF>());
-                        superSquare[j].Add(new List<RectangleF>());
-                        activeSquare[j].Add(new List<RectangleF>());
-
-                        alarmSquare_temp[j].Add(new List<RectangleF>());
-                        troubleSquare_temp[j].Add(new List<RectangleF>());
-                        superSquare_temp[j].Add(new List<RectangleF>());
-                        activeSquare_temp[j].Add(new List<RectangleF>());
-
-
-                        alarmMultiPoint[j].Add(new List<PointF[]>());
-                        troubleMultiPoint[j].Add(new List<PointF[]>());
-                        superMultiPoint[j].Add(new List<PointF[]>());
-                        activeMultiPoint[j].Add(new List<PointF[]>());
-
-
-                        alarmMultiPoint_temp[j].Add(new List<PointF[]>());
-                        troubleMultiPoint_temp[j].Add(new List<PointF[]>());
-                        superMultiPoint_temp[j].Add(new List<PointF[]>());
-                        activeMultiPoint_temp[j].Add(new List<PointF[]>());
-                    }     
-                }
-            }
-            catch
-            { }
+            Directory.CreateDirectory("logs");
+            LoadAllData();
             timer100 = new Timer();   // timer for refreshing time and date every second and blinking
             timer100.Tick += new EventHandler(Timer1_Tick_Alarm);
             timer100.Interval = 100; // in milliseconds 
@@ -568,114 +319,9 @@ namespace Airport_GA
             date.Text = DateTime.Now.ToString("dddd,  dd-MMMM-yyyy");
             time.Text = DateTime.Now.ToString("hh:mm:ss tt");
 
-            float x = resolution.Width / 1920;
-            float y = resolution.Height / 1080;
-            // Dictionary for zone locations on the drawing, MAKE THIS DYNAMIC
-            try
-            {
-                for(int i = 0; i < drawing_count; i++)
-                {
-                    for (int j = 1; j < ledZone[i].Count; j++)
-                    {
-                        string[] coord = ledZone[i][j].Split('|');
-                        zoneLEDCoord[i].Add(ledZoneLabel[i][j], new RectangleF(Int32.Parse(coord[0]) * x, Int32.Parse(coord[1]) * y, led_size * x, led_size * y));
-                    }
-                    for (int j = 1; j < squareZone[i].Count; j++)
-                    {
-                        string[] coord = squareZone[i][j].Split('|');
-                        squareZoneCoord[i].Add(squareZoneLabel[i][j], new RectangleF(Int32.Parse(coord[0]) * x, Int32.Parse(coord[1]) * y, Int32.Parse(coord[2]) * x, Int32.Parse(coord[3]) * y));
-                    }
-                    for (int j = 1; j < multiPointZone[i].Count; j++)
-                    {
-
-                        string[] coord = multiPointZone[i][j].Split(';');
-                        PointF[] zonePoints = new PointF[coord.Count()];
-                        for (int k = 0; k < coord.Count(); k++)
-                            zonePoints[k] = new PointF(Int32.Parse(coord[k].Split('|')[0]) * x, Int32.Parse(coord[k].Split('|')[1]) * y);
-                        multiPointZoneCoord[i].Add(multiPointZoneLabel[i][j], zonePoints);
-                    }
-
-                }
-            
-            }
-            catch
-            {
-                //statusPanel.AppendText(ledZone.Count+"");
-            }
-
-            string[] ports = SerialPort.GetPortNames();
-            foreach (string port in ports)
-            {
-                com1.Items.Add(port + "_640");
-                com1.Items.Add(port + "_3030");
-            }
-            supervisoryLED.Hide();
-            Helper.TxtColor(alarmLog, Color.White);
-            alarmLog.AppendText("Application just Started ............... \n\n");
-            
-            // If all buildings with 2 or more panles always have 3030 then no need to change this
-            try
-            {
-                com1.SelectedIndex = panelType;
-                //closePort.Text = "Open connection\n (" + com1.Text.Substring(0, 4) + ", "+ com2.Text.Substring(0, 4) + ")";
-            }
-            catch(Exception e)
-            {
-                MessageBox.Show("No COM Ports found "+e, "Error connecting to COM Port ",
-                    MessageBoxButtons.OK, MessageBoxIcon.Error);
-            }
-
-            try
-            {
-                if(com1.Text.Contains("640"))
-                    port1 = new SerialPort(com1.Text.Substring(0, com1.Text.IndexOf('_')), 9600, Parity.Even, 7, StopBits.One);
-                if (com1.Text.Contains("3030"))
-                { 
-                    port1 = new SerialPort(com1.Text.Substring(0, com1.Text.IndexOf('_')), 9600, Parity.None, 8, StopBits.One);
-                    is_Com1_3030 = true;
-                    defaultTime = "11:51:50A WED APR 14, 2021";
-                }
-                else
-                { 
-                    is_Com1_3030 = false;
-                    defaultTime = "07:27A 042821 Wed";
-                }
-                
-
-                if (port1 != null) { 
-                port1.Handshake = Handshake.RequestToSendXOnXOff;
-                // Method to be called when there is data waiting in the port1's buffer 
-                port1.DataReceived += new SerialDataReceivedEventHandler(Port1_DataReceived);
-                // Begin communications 
-                port1.Open();
-                // Enter an application loop to keep this thread alive 
-                Console.ReadLine();
-                closePort.Text = "Close connection\n (" + com1.Text.Substring(0,4) +  ")";
-                com1.Enabled = false;
-                comStatusLED.BackColor = System.Drawing.Color.Lime;
-                comStatusLED.Text = "Connected";
-                testLds.Enabled = false;
-                alarmLog.WordWrap = false;
-                Helper.TxtColor(alarmLog, Color.LimeGreen);
-                alarmLog.AppendText("\n\n*** MIMIC PANEL Monitoring Openned by Supervisor ***\n\n");
-                alarmLog.ScrollToCaret();
-                alarmLog.WordWrap = true;
-                alarmLog.ScrollToCaret();
-                }
-            }
-            catch
-            {
-                MessageBox.Show("Unable to connect to " + com1.Text + ", check cable", "Error connecting to " + com1.Text,
-                    MessageBoxButtons.OK, MessageBoxIcon.Error);
-            }
-            using (StreamReader r = new StreamReader(logFile))
-            {
-                while (r.ReadLine() != null)
-                    lineCount++;
-            }
+            drawing.Paint += new System.Windows.Forms.PaintEventHandler(PictureBox_Paint_troubl);
             drawing.Paint += new System.Windows.Forms.PaintEventHandler(PictureBox_Paint_super);
             drawing.Paint += new System.Windows.Forms.PaintEventHandler(PictureBox_Paint_active);
-            drawing.Paint += new System.Windows.Forms.PaintEventHandler(PictureBox_Paint_troubl);
             drawing.Paint += new System.Windows.Forms.PaintEventHandler(PictureBox_Paint_alarm);
         }
         private void Timer1_Tick_Alarm(object sender, EventArgs e)
@@ -686,7 +332,7 @@ namespace Airport_GA
                 restartTimer++;
             date.Text = DateTime.Now.ToString("dddd, dd-MMMM-yyyy");
             time.Text = DateTime.Now.ToString("hh:mm:ss tt");
-            if ((date.Text.Contains(", 10") | date.Text.Contains(", 20") | date.Text.Contains(", 28")) 
+            if ((date.Text.Contains(", 10") | date.Text.Contains(", 20") | date.Text.Contains(", 28"))
                 & time.Text.Contains("03:03:03 AM") & restartTimer > 9)
             { // play with this to restart the application at 03:03:03 AM (use AND for AM)
                 if (alarmLog.Text.Contains("MIMIC"))
@@ -712,17 +358,18 @@ namespace Airport_GA
                 }
                 System.IO.File.WriteAllText(logFile, string.Empty);
                 lineCom1 = "";
+
                 //Application.Restart();
-                //Environment.Exit(0);//don't know if we need this.
+                //Environment.Exit(0);//this is to close current application to avoid having multilpe instances.
             }
             resolution = Screen.PrimaryScreen.Bounds;
             // Making LED at bottom panel blink
             if (blink1 == false)
             {
                 drawing.Refresh();
-                if (alarm.Contains(true) | (statusPanel.Text.Contains("ALARM,"))) 
+                if (alarm.Contains(true) | (statusPanel.Text.Contains("ALARM,")))
                     FireAlarmLED.Show();
-                for(int i = 0;i < nodeCount;i++)
+                for (int i = 0; i < nodeCount; i++)
                 {
                     if (troubleCount[i] > 0 | statusPanel.Text.Contains("TROUBLE,"))//!!! READING StatusPanel ALL THE TIME CAN BE AN ISSUE
                     {
@@ -745,8 +392,9 @@ namespace Airport_GA
                         supervisoryLED.Show();
                         break;
                     }
-                    else
-                        superCount[i] = 0;
+                    else { 
+                        superCount[i] = 0; activeCount[i] = 0;
+                    }
                 }
 
                 blink1 = true;
@@ -759,7 +407,7 @@ namespace Airport_GA
                 supervisoryLED.Hide();
                 blink1 = false;
             }
-            
+
 
             // TIMER 1 END
         }
@@ -777,9 +425,9 @@ namespace Airport_GA
                 alarmLog.Text = "";
             try
             {
-                if(port1 != null)
-                if (port1.IsOpen)
-                {
+                if (port1 != null)
+                    if (port1.IsOpen)
+                    {
                         if ((port1.CtsHolding | port1.CDHolding))
                         {
                             comStatusLED.Text = "Connected";
@@ -791,9 +439,10 @@ namespace Airport_GA
                             comStatusLED.BackColor = Color.Red;
                         }
 
-                }
+                    }
             }
-            catch(Exception ex) {
+            catch (Exception ex)
+            {
                 using (StreamWriter sw = File.AppendText("COMErrorSignal.txt"))
                 {
                     sw.WriteLine(ex + "\n checking CD and CTS Line: [!727] " + time.Text + ", " + date.Text + "\n\n");
@@ -803,26 +452,47 @@ namespace Airport_GA
         }
         private void Timer3_Tick_Rotation(object sender, EventArgs e)
         {
-            if(drawing_count!=1& ! busy)
+            if (drawing_count != 1 & !busy)
                 drawingRotate();
+            signalIdelCounter++;
+            if (signalIdelCounter > 15) //refresh the connection every 45 seconds. number is * 3 seconds
+            {
+                port1.Close();
+                lineCom1 = "";
+                if (com1.Text.Contains("640"))
+                    port1 = new SerialPort(com1.Text.Substring(0, com1.Text.IndexOf('_')), 9600, Parity.Even, 7, StopBits.One);
+                if (com1.Text.Contains("3030"))
+                {
+                    port1 = new SerialPort(com1.Text.Substring(0, com1.Text.IndexOf('_')), 9600, Parity.None, 8, StopBits.One);
+                    is_Com1_3030 = true;
+                    defaultTime = "11:51:50A WED APR 14, 2021";
+                }
+                else
+                {
+                    is_Com1_3030 = false;
+                    defaultTime = "07:27A 042821 Wed";
+                }
+                port1.Handshake = Handshake.RequestToSendXOnXOff;
+                // Method to be called when there is data waiting in the port1's buffer 
+                port1.DataReceived += new SerialDataReceivedEventHandler(Port1_DataReceived);
+                // Begin communications 
+                port1.Open();
+                signalIdelCounter = 0;
+            }
+
         }
-        private void Minimize(object sender, EventArgs e)
-        {
-            this.WindowState = FormWindowState.Minimized;
-        }
+
         private void Port1_DataReceived(object sender, SerialDataReceivedEventArgs e)
         {
             // Show all the incoming data in the port1's buffer
             currNode = nodes[0];
             currNodeIndx = 0;
-            if (!is_Com1_3030)
-                portPanelType = 0;
-            else
-                portPanelType = 1;
             try
             {
-            string signal1 = port1.ReadExisting();
-            lineCom1 = lineCom1 + signal1;
+                string signal1 = port1.ReadExisting();
+                lineCom1 = lineCom1 + signal1;
+                signalIdelCounter = signalIdelCounter / 2;
+                lineCom1 = lineCom1.Replace("/n", "\n");// remove this in production version !!!
 
                 using (StreamWriter sw = File.AppendText("signal_parts_port1.txt"))
                 {
@@ -835,16 +505,18 @@ namespace Airport_GA
                     sw.Close();
                 }
                 bool line_640 = !is_Com1_3030 & sep640.IsMatch(lineCom1);
-                bool line_3030_no_module = is_Com1_3030 & sep3030.IsMatch(lineCom1);
+                bool line_3030 = is_Com1_3030 & sep3030.IsMatch(lineCom1) & lineCom1.Substring(sep3030.Match(lineCom1).Index).Contains("\n");
                 // check if we have a complete signal
-                if (line_640 | line_3030_no_module)
+                if (line_640 | line_3030)
                 {
-                    if(lineCom1.Contains("PLEASE WAIT"))
+                    if (lineCom1.Contains("PLEASE WAIT"))
                     {
                         Process_signal("SYSTEM NORMAL                             " + defaultTime);
-                        if (!is_Com1_3030) {
+                        if (!is_Com1_3030)
+                        {
                             lineCom1 = Process_signal(lineCom1);
-                            lineCom1 = "TROUBL IN SYSTEM    Sys Initialization                       03:18P 060321 Thu  "; }
+                            lineCom1 = "TROUBL IN SYSTEM    Sys Initialization                       03:18P 060321 Thu  ";
+                        }
                     }
                     int i = 0;
                     int q = 0;
@@ -853,23 +525,27 @@ namespace Airport_GA
                     {
                         foreach (Match match in sep3030.Matches(lineCom1))
                         {
-                        i = match.Index;
-                        Process_signal(lineCom1.Substring(q, i + match.Length - q));
-                        remainder = lineCom1.Substring(i + match.Length);
-                        q = i + match.Length;
+                            i = match.Index;
+                            if (lineCom1.Substring(i).Contains("\n"))
+                            {
+                                Process_signal(lineCom1.Substring(q, i + match.Length - q));
+                                remainder = lineCom1.Substring(i + match.Length);
+                                q = i + match.Length;
+                            }
                         }
                     }
                     else if (sep640.Matches(lineCom1).Count > 1)
                     {
                         foreach (Match match in sep640.Matches(lineCom1))
                         {
-                        i = match.Index;
-                        Process_signal(lineCom1.Substring(q, i + match.Length - q));
-                        remainder = lineCom1.Substring(i + match.Length);
-                        q = i + match.Length;
+                            i = match.Index;
+                            Process_signal(lineCom1.Substring(q, i + match.Length - q));
+                            remainder = lineCom1.Substring(i + match.Length);
+                            q = i + match.Length;
                         }
                     }
-                    else if(sep640.IsMatch(lineCom1)) { 
+                    else if (sep640.IsMatch(lineCom1))
+                    {
                         Process_signal(lineCom1);
                         remainder = lineCom1.Substring(sep640.Match(lineCom1).Index + sep640.Match(lineCom1).Length);
                     }
@@ -885,7 +561,7 @@ namespace Airport_GA
             {
                 using (StreamWriter sw = File.AppendText("port1ErrorSignal.txt"))
                 {
-                    sw.WriteLine(ex + "\nLine: [!782]" + time.Text + ", " + date.Text+"\n\n");
+                    sw.WriteLine(ex + "\nLine: [!782]" + time.Text + ", " + date.Text + "\n\n");
                     sw.Close();
                     lineCom1 = "";
                 }
@@ -914,13 +590,19 @@ namespace Airport_GA
             completeSignal = Regex.Replace(completeSignal, @"\s{2,}", "|");//replace 2 or more white space with bars
             completeSignal = Regex.Replace(completeSignal, @"\n|\r|IN SYSTEM|GEN ALARM|GEN TROUBL", "");//remove space and some words
             completeSignal = Regex.Replace(completeSignal, @"TROUBLE REMINDER", "REMINDER");//remove space and some words
-            if(!completeSignal.Contains("ACTIVE TRACK SUPERV") & !completeSignal.Contains("CLR ACT"))
+            completeSignal = Regex.Replace(completeSignal, @"L\d{2}1M1[4,5]5", "GENERAL MON");//remove space and some words
+            completeSignal = Regex.Replace(completeSignal, @"L\d{2}1M1[4,5]6", "AC FAIL");//remove space and some words
+            completeSignal = Regex.Replace(completeSignal, @"L\d{2}1M1[4,5]7", "BATTERY");//remove space and some words
+            completeSignal = Regex.Replace(completeSignal, @"L\d{2}1M1[4,5]8", "EARTH");//remove space and some words
+            completeSignal = Regex.Replace(completeSignal, @"L\d{2}1M1[4,5]9", "CHARGER FAIL");// !!! error with 640
+            completeSignal = Regex.Replace(completeSignal, @"Z\d{2,}", ""); // removing Z501 appearing before  clear trouble
+            if (!completeSignal.Contains("ACTIVE TRACK SUPERV") & !completeSignal.Contains("CLR ACT"))
                 completeSignal = completeSignal.Replace("TRACK SUPERV", "TRACK SUPRVISORY");
             if (completeSignal[0] == '|')
                 completeSignal = completeSignal.Substring(1);
             string[] lines = completeSignal.Split('|');
             bool startWithAlarm = completeSignal.StartsWith("ALARM") | completeSignal.StartsWith("FIRE ALARM");
-            bool startWithTrouble = completeSignal.StartsWith("TROUBL") & (!completeSignal.StartsWith("TROUBLE_MON")| !completeSignal.StartsWith("TROUBLE MON"));
+            bool startWithTrouble = completeSignal.StartsWith("TROUBL") & (!completeSignal.StartsWith("TROUBLE_MON") | !completeSignal.StartsWith("TROUBLE MON"));
             bool containSuper = completeSignal.Contains("SUPERV");
             bool containActive = completeSignal.Contains("ACTIVE WATERFLOW_S") | completeSignal.Contains("ACTIVE TAMPER");
             bool containAck = completeSignal.Contains("ACKN") | completeSignal.Contains("ACKED");
@@ -929,10 +611,10 @@ namespace Airport_GA
             //filter signal code type and store it in a variable
             //check content here
             if (is_Com1_3030)
-            signal_module = modNum3030.Match(completeSignal).ToString();
+                signal_module = modNum3030.Match(completeSignal).ToString();
             else
-            signal_module = modNum640.Match(completeSignal).ToString();
-            
+                signal_module = modNum640.Match(completeSignal).ToString();
+
             if (signal_module != "")
                 try
                 {
@@ -952,7 +634,7 @@ namespace Airport_GA
                 {
                     using (StreamWriter sw = File.AppendText("moduleFindingError.txt"))
                     {
-                        sw.WriteLine(ex + "\nLine: [!828]" + time.Text + ", " + date.Text + "\n\n");
+                        sw.WriteLine(ex + signal_module + "\nLine: [!828]" + time.Text + ", " + date.Text + "\n\n");
                         sw.Close();
                     }
                 }
@@ -968,7 +650,7 @@ namespace Airport_GA
             }
             if (startWithTrouble & !containAck & !containCLR)
             {
-                if ((modNum3030.IsMatch(completeSignal) | modNum640.IsMatch(completeSignal)) & !powerModule.IsMatch(completeSignal))
+                if ((modNum3030.IsMatch(completeSignal) | modNum640.IsMatch(completeSignal)))
                 {
                     alarm[currNodeIndx] = false;
                     trouble[currNodeIndx] = true;
@@ -977,49 +659,80 @@ namespace Airport_GA
                 }
                 else
                 {
-                    statusPanel.Invoke(new Action(() => { 
-                    Helper.TxtColor2(statusPanel, Color.Orange);
-                    if (completeSignal.Contains("BATTERY") | completeSignal.Contains("M157"))
+                    statusPanel.Invoke(new Action(() =>
                     {
-                        powerLED.BackColor = Color.Red;
-                        powerLED.Text = "BATTERY FAIL";
-                        powerFail.Add("battry");
-                        statusPanel.AppendText("TROUBLE, BATTERY FAILURE\n");
-                    }
-                    else if (completeSignal.Contains("AC FAIL") | completeSignal.Contains("M156"))
-                    {
-                        powerLED.BackColor = Color.Red;
-                        powerLED.Text = "AC FAIL";
-                        powerFail.Add("AC");
-                        statusPanel.AppendText("TROUBLE, AC FAILURE\n");
-                    }
-                    else if (completeSignal.Contains("GENERAL MON") | completeSignal.Contains("M155"))
-                    {
-                        powerLED.BackColor = Color.Red;
-                        powerLED.Text = "GENERAL MON";
-                        powerFail.Add("GENERAL MON");
-                        statusPanel.AppendText("TROUBLE, GENERAL MONITOR\n");
-                    }
-                    else if (completeSignal.Contains("EARTH") | completeSignal.Contains("M158"))
-                    {
-                        powerLED.BackColor = Color.Red;
-                        powerLED.Text = "EARTH FAIL";
-                        powerFail.Add("EARTH");
-                        statusPanel.AppendText("TROUBLE, EARTH FAILURE\n");
-                    }
-                    else if (completeSignal.Contains("CHARGER FAIL") | completeSignal.Contains("M159"))
-                    {
-                        powerLED.BackColor = Color.Red;
-                        powerLED.Text = "CHARGER FAIL";
-                        powerFail.Add("CHARGER");
-                        statusPanel.AppendText("TROUBLE, CHARGER FAILURE\n");
-                    }
-                    else if (completeSignal.Contains("NETWORK FAIL") | completeSignal.Contains("NCM COMM FAILURE"))
-                    {
-                        statusPanel.AppendText("TROUBLE, COMMUNICATION FAILURE\n");
-                    }
-                    else
-                        statusPanel.AppendText("TROUBLE, " + lines[1] + "\n");// check this port panel type variable
+                        Helper.TxtColor2(statusPanel, Color.Orange);
+                        if (completeSignal.Contains("BATTERY") | completeSignal.Contains("L01M157"))
+                        {
+                            powerLED.BackColor = Color.Red;
+                            powerLED.Text = "BATTERY FAIL";
+                            powerFail.Add("battry");
+                            if (is_Com1_3030)
+                                statusPanel.AppendText("TROUBLE, BATTERY FAILURE, L01M157\n");
+                            else
+                                statusPanel.AppendText("TROUBLE, BATTERY FAILURE\n");
+                        }
+                        else if (completeSignal.Contains("AC FAIL") | completeSignal.Contains("1M156"))
+                        {
+                            powerLED.BackColor = Color.Red;
+                            powerLED.Text = "AC FAIL";
+                            powerFail.Add("AC");
+                            if (is_Com1_3030)
+                                statusPanel.AppendText("TROUBLE, AC FAILURE, L01M156\n");
+                            else
+                                statusPanel.AppendText("TROUBLE, AC FAILURE\n");
+                        }
+                        else if (completeSignal.Contains("GENERAL MON") | completeSignal.Contains("1M155"))
+                        {
+                            powerLED.BackColor = Color.Red;
+                            powerLED.Text = "GENERAL MON";
+                            powerFail.Add("GENERAL MON");
+                            if (is_Com1_3030)
+                                statusPanel.AppendText("TROUBLE, GENERAL MONITOR, L01M155\n");
+                            else
+                                statusPanel.AppendText("TROUBLE, GENERAL MONITOR\n");
+
+                        }
+                        else if (completeSignal.Contains("EARTH") | completeSignal.Contains("1M158"))
+                        {
+                            powerLED.BackColor = Color.Red;
+                            powerLED.Text = "EARTH FAIL";
+                            powerFail.Add("EARTH");
+                            if (is_Com1_3030)
+                                statusPanel.AppendText("TROUBLE, EARTH FAILURE, L01M158\n");
+                            else
+                                statusPanel.AppendText("TROUBLE, EARTH FAILURE\n");
+
+                        }
+                        else if (completeSignal.Contains("CHARGER FAIL") | completeSignal.Contains("1M159"))
+                        {
+                            powerLED.BackColor = Color.Red;
+                            powerLED.Text = "CHARGER FAIL";
+                            powerFail.Add("CHARGER");
+                            if (is_Com1_3030)
+                                statusPanel.AppendText("TROUBLE, CHARGER FAILURE, L01M159\n");
+                            else
+                                statusPanel.AppendText("TROUBLE, CHARGER FAILURE\n");
+
+                        }
+                        else if (completeSignal.Contains("NCM COMM FAILURE"))
+                        {
+                            statusPanel.AppendText("TROUBLE, COMMUNICATION FAILURE (NCM)\n");
+                        }
+                        else if (completeSignal.Contains("NETWORK FAIL PORT A"))
+                        {
+                            statusPanel.AppendText("TROUBLE, COMMUNICATION FAILURE (PORT A)\n");
+                        }
+                        else if (completeSignal.Contains("NETWORK FAIL PORT B"))
+                        {
+                            statusPanel.AppendText("TROUBLE, COMMUNICATION FAILURE (PORT B)\n");
+                        }
+                        else if (completeSignal.Contains("NETWORK FAIL"))
+                        {
+                            statusPanel.AppendText("TROUBLE, COMMUNICATION FAILURE\n");
+                        }
+                        else
+                            statusPanel.AppendText("TROUBLE, " + lines[1] + "\n");
                     }));
                 }
 
@@ -1033,8 +746,8 @@ namespace Airport_GA
                     trouble[currNodeIndx] = false;
                     super[currNodeIndx] = true;
                     active[currNodeIndx] = false;
+                    superCount[currNodeIndx]++;
                 }
-                superCount[currNodeIndx]++;
             }
             if (containActive & !containAck & !containCLR)//this should be separated for track superv
             {
@@ -1044,6 +757,7 @@ namespace Airport_GA
                     trouble[currNodeIndx] = false;
                     super[currNodeIndx] = false;
                     active[currNodeIndx] = true;
+                    activeCount[currNodeIndx]++;
                 }
             }
             if (containCLRTB)
@@ -1078,41 +792,54 @@ namespace Airport_GA
                 }
                 else
                 {
-                    if (completeSignal.Contains("BATT") | completeSignal.Contains("M157"))
+                    if (completeSignal.Contains("BATT") | completeSignal.Contains("1M157"))
                     {
                         powerFail.Remove("battry");
                         removeLine("BATT", "TROUBLE");
-                    } 
-                    if (completeSignal.Contains("AC FAIL") | completeSignal.Contains("M156"))
+                    }
+                    if (completeSignal.Contains("AC FAIL") | completeSignal.Contains("1M156"))
                     {
                         powerFail.Remove("AC");
                         removeLine("AC FAIL", "TROUBLE");
                     }
-                    if (completeSignal.Contains("EARTH") | completeSignal.Contains("M158"))
+                    if (completeSignal.Contains("EARTH") | completeSignal.Contains("1M158"))
                     {
                         powerFail.Remove("EARTH");
                         removeLine("EARTH", "TROUBLE");
                     }
-                    if (completeSignal.Contains("CHARGER") | completeSignal.Contains("M159"))
+                    if (completeSignal.Contains("CHARGER") | completeSignal.Contains("1M159"))
                     {
                         powerFail.Remove("CHARGER");
                         removeLine("CHARGER", "TROUBLE");
                     }
-                    if (completeSignal.Contains("GENERAL MON") | completeSignal.Contains("M155"))
+                    if (completeSignal.Contains("GENERAL MON") | completeSignal.Contains("1M155"))
                     {
                         powerFail.Remove("GENERAL MON");
                         removeLine("GENERAL MON", "TROUBLE");
                     }
-                    if (completeSignal.Contains("NCM")| completeSignal.Contains("NETWORK"))
+                    if (completeSignal.Contains("NCM COMM FAILURE"))
+                    {
+                        removeLine("COMMUNICATION FAILURE (NCM)", "TROUBLE");
+                    }
+                    else if (completeSignal.Contains("NETWORK FAIL PORT A"))
+                    {
+                        removeLine("COMMUNICATION FAILURE (PORT A)", "TROUBLE");
+                    }
+                    else if (completeSignal.Contains("NETWORK FAIL PORT B"))
+                    {
+                        removeLine("COMMUNICATION FAILURE (PORT B)", "TROUBLE");
+                    }
+                    else if (completeSignal.Contains("NCM") | completeSignal.Contains("NETWORK"))
                     {
                         removeLine("COMMUNICATION", "TROUBLE");
                     }
                     if (!powerFail.Any())
                     {
-                            powerLED.Invoke(new Action(() => {
-                                powerLED.BackColor = Color.Lime;
-                                powerLED.Text = "";}));
- 
+                        powerLED.Invoke(new Action(() =>
+                        {
+                            powerLED.BackColor = Color.Lime;
+                            powerLED.Text = "";
+                        }));
                     }
                     removeLine(completeSignal.Split('|')[1], "TROUBLE");
 
@@ -1155,27 +882,65 @@ namespace Airport_GA
                 superCount[currNodeIndx]--;
                 drawing.Invalidate();
             }
+            if (containCLR & containActive)
+            {
+                try
+                {
+                    busy = true;
+                    if (signal_zone != "")
+                    {
+                        if (multiPointZoneLabel[drawingNum].Contains(signal_zone))
+                        {// remove from both rect and temp
+                            {
+                                activeMultiPoint[currNodeIndx][drawingNum].Remove(multiPointZoneCoord[drawingNum][signal_zone]);
+                                activeMultiPoint_temp[currNodeIndx][drawingNum].Remove(multiPointZoneCoord[drawingNum][signal_zone]);
+                                activeLEDs[currNodeIndx][drawingNum].Remove(zoneLEDCoord[drawingNum][signal_zone]);
+                                activeLEDs_temp[currNodeIndx][drawingNum].Remove(zoneLEDCoord[drawingNum][signal_zone]);
+                                drawing.Invalidate();
+                                if (!activeLEDs[currNodeIndx][drawingNum].Any())
+                                    active[currNodeIndx] = false; // set this to false after all floors have 0 active
+                            }
+                        }
+                        else
+                        {
+                            {
+                                activeSquare[currNodeIndx][drawingNum].Remove(squareZoneCoord[drawingNum][signal_zone]);
+                                activeSquare_temp[currNodeIndx][drawingNum].Remove(squareZoneCoord[drawingNum][signal_zone]);
+                                activeLEDs[currNodeIndx][drawingNum].Remove(zoneLEDCoord[drawingNum][signal_zone]);
+                                activeLEDs_temp[currNodeIndx][drawingNum].Remove(zoneLEDCoord[drawingNum][signal_zone]);
+                                drawing.Invalidate();
+                                if (!activeLEDs[currNodeIndx][drawingNum].Any())
+                                    active[currNodeIndx] = false;
+                            }
+                        }
+                        removeLine(signal_module, "ACTIVE SUPERVISORY");
+                    }
+                    activeCount[currNodeIndx]--;
+                    drawing.Invalidate();
+                }
+                catch { }
+            }
             if (completeSignal.Contains("RESET"))
             {
-                for(int i = 0;i < nodeCount; i++)
+                for (int i = 0; i < nodeCount; i++)
                 {
                     alarm[i] = false;
                     active[i] = false;
                     //trouble[i] = false;
                     //super[i] = false;
                 }
-                
+
                 drawing.Invalidate();
 
                 var rectToReset = new List<List<List<RectangleF>>>();
                 var pointToReset = new List<List<List<PointF[]>>>();
 
-                for(int i = 0;i < nodeCount; i++)
+                for (int i = 0; i < nodeCount; i++)
                 {
-                rectToReset = new List<List<List<RectangleF>>>() {alarmLEDs[i], alarmLEDs_temp[i], alarmSquare[i],
+                    rectToReset = new List<List<List<RectangleF>>>() {alarmLEDs[i], alarmLEDs_temp[i], alarmSquare[i],
                     alarmSquare_temp[i],activeLEDs[i], activeLEDs_temp[i], activeSquare[i], activeSquare_temp[i]};
 
-                pointToReset = new List<List<List<PointF[]>>>() {alarmMultiPoint[i], alarmMultiPoint_temp[i],
+                    pointToReset = new List<List<List<PointF[]>>>() {alarmMultiPoint[i], alarmMultiPoint_temp[i],
                 activeMultiPoint[i], activeMultiPoint_temp[i]};
 
                     foreach (List<List<RectangleF>> rectVar in rectToReset)
@@ -1196,19 +961,24 @@ namespace Airport_GA
                 }
 
                 priorityFloor.Clear();
-                statusPanel.Invoke(new Action(() => { 
+                statusPanel.Invoke(new Action(() =>
+                {
                     List<string> finalLines = statusPanel.Lines.ToList();
                     finalLines.RemoveAll(x => x.StartsWith("ALARM") || x.StartsWith("ACTIVE SUPERVISORY"));
                     statusPanel.Lines = finalLines.ToArray();
                     Helper.ColorLine(statusPanel);
                 }));
-                alarmEvnt.Invoke(new Action(() => {
-                    alarmEvnt.Text = "";}));
-                alarmLog.Invoke(new Action(() => {
+                alarmEvnt.Invoke(new Action(() =>
+                {
+                    alarmEvnt.Text = "";
+                }));
+                alarmLog.Invoke(new Action(() =>
+                {
                     alarmLog.ResetText();
                     alarmLog.ForeColor = Color.Turquoise;
                     alarmLog.Select(alarmLog.TextLength, alarmLog.TextLength);
-                    alarmLog.ScrollToCaret();}));
+                    alarmLog.ScrollToCaret();
+                }));
             }
             if (completeSignal.Contains("NORMAL"))
             {
@@ -1249,13 +1019,16 @@ namespace Airport_GA
 
                 troubleCount[currNodeIndx] = 0;
                 superCount[currNodeIndx] = 0;
-                if(!alarm.Contains(false))
+                activeCount[currNodeIndx] = 0;
+                if (!alarm.Contains(false))
                     priorityFloor.Clear();
-                statusPanel.Invoke(new Action(() => {
+                statusPanel.Invoke(new Action(() =>
+                {
                     statusPanel.Text = ""; //!!! this for only single panels
                 }));
                 powerFail.Clear();//!!! this for only single panels
-                powerLED.Invoke(new Action(() => {
+                powerLED.Invoke(new Action(() =>
+                {
                     powerLED.BackColor = Color.Lime;
                     powerLED.Text = "";
                 }));
@@ -1266,29 +1039,31 @@ namespace Airport_GA
             if (alarm[currNodeIndx] | trouble[currNodeIndx] | super[currNodeIndx] | active[currNodeIndx])
             {
                 string fm200 = "";
-                if (completeSignal.Contains("-Z1"))
+                if (completeSignal.Contains("GS-Z1"))
                     fm200 = " Alarm1";
-                else if (completeSignal.Contains("-Z2"))
+                else if (completeSignal.Contains("GS-Z2"))
                     fm200 = " Alarm2";
-                else if (completeSignal.Contains("-T"))
+                else if (completeSignal.Contains("GS-T"))
                     fm200 = " Trouble";
-                else if (completeSignal.Contains("-GD"))
+                else if (completeSignal.Contains("GS-GD"))
                     fm200 = " GAS DISCHARGE";
                 if (!containAck & !containCLR)
                     if (modNum640.IsMatch(completeSignal))
                     {
                         try
                         {
-                            if(alarm[currNodeIndx] & !trouble[currNodeIndx] & !super[currNodeIndx] & !active[currNodeIndx])
+                            if (alarm[currNodeIndx] & !trouble[currNodeIndx] & !super[currNodeIndx] & !active[currNodeIndx])
                                 for (int i = 1; i < areaID.Count(); i++)
                                 {//extracting module zone and room lable and writing to alarmEvent if alarm.
                                     if (address[i].Contains(signal_module) & address[i].Contains(currNode))
                                     {
                                         signal_zone = areaID[i];
                                         zone_label = areaLabel[i];
-                                        alarmEvnt.Invoke(new Action(() => {
-                                            alarmEvnt.AppendText(signal_zone.Replace("ZONE ", "Z") + ", " + zone_label + ", " + signal_floor + "\n"); }));
-                                    
+                                        alarmEvnt.Invoke(new Action(() =>
+                                        {
+                                            alarmEvnt.AppendText(signal_zone.Replace("ZONE ", "Z") + ", " + zone_label + ", " + signal_floor + "\n");
+                                        }));
+
                                         break;
                                     }
                                 }
@@ -1351,20 +1126,28 @@ namespace Airport_GA
                             }
                             else
                             {
-                                statusPanel.Invoke(new Action(() => { 
-                                Helper.TxtColor2(statusPanel, Color.Orange);
-                                statusPanel.AppendText("Device: " + signal_module + ", is not found in database.\n");
-                                statusPanel.ScrollToCaret();}));
+                                statusPanel.Invoke(new Action(() =>
+                                {
+                                    Helper.TxtColor2(statusPanel, Color.Orange);
+                                    statusPanel.AppendText("Device: " + signal_module + ", is not found in database.\n");
+                                    statusPanel.ScrollToCaret();
+                                }));
+                                using (StreamWriter sw = File.AppendText("Missing Devices.txt"))
+                                {
+                                    sw.WriteLine(signal_module);
+                                    sw.Close();
+                                }
                             }
 
                             if (startWithAlarm & !containCLR & !containAck)
                             {   //Writing to StatusPanel
                                 if (signal_module != "")
-                                for (int i = 1; i < areaID.Count(); i++)
-                                {  
+                                    for (int i = 1; i < areaID.Count(); i++)
+                                    {
                                         if (address[i].Contains(signal_module) & address[i].Contains(currNode))
                                         {
-                                            statusPanel.Invoke(new Action(() => { 
+                                            statusPanel.Invoke(new Action(() =>
+                                            {
                                                 Helper.TxtColor2(statusPanel, Color.Red);
                                                 statusPanel.AppendText("ALARM,  " + address[i] + ",  " +
                                                 areaID[i].Replace("ZONE ", "Z") + ", " + areaLabel[i] + ", " + addressLabel[i] + fm200 + "\n");
@@ -1372,7 +1155,7 @@ namespace Airport_GA
                                             }));
                                             break;
                                         }
-                                }
+                                    }
                             }
                             string signal_module_sp = "";
                             signal_module_sp = modNum640.Match(completeSignal).ToString();
@@ -1383,20 +1166,22 @@ namespace Airport_GA
                                 {
                                     if (signal_module_sp == "")
                                     {
-                                        statusPanel.Invoke(new Action(() => { 
+                                        statusPanel.Invoke(new Action(() =>
+                                        {
                                             string panelNum = address[4].Substring(0, 4);
                                             Helper.TxtColor2(statusPanel, Color.Orange);
-                                            statusPanel.AppendText("TROUBLE,  " + panelNum + ",  " + lines[1+portPanelType] + fm200 + "\n");
+                                            statusPanel.AppendText("TROUBLE,  " + panelNum + ",  " + lines[1 + panelType] + fm200 + "\n");
                                             statusPanel.ScrollToCaret();
                                         }));
                                         break;
                                     }
                                     if (address[i].Contains(signal_module_sp) & address[i].Contains(currNode))
                                     {
-                                        statusPanel.Invoke(new Action(() => { 
-                                        Helper.TxtColor2(statusPanel, Color.Orange);
-                                        statusPanel.AppendText("TROUBLE,  " + address[i] + ",  " +
-                                            areaID[i].Replace("ZONE ", "Z") + ", " + areaLabel[i] + ", " + addressLabel[i] + fm200 + "\n");
+                                        statusPanel.Invoke(new Action(() =>
+                                        {
+                                            Helper.TxtColor2(statusPanel, Color.Orange);
+                                            statusPanel.AppendText("TROUBLE,  " + address[i] + ",  " +
+                                                areaID[i].Replace("ZONE ", "Z") + ", " + areaLabel[i] + ", " + addressLabel[i] + fm200 + "\n");
                                             statusPanel.ScrollToCaret();
                                         }));
                                         break;
@@ -1404,26 +1189,28 @@ namespace Airport_GA
 
                                 }
                             }
-                            if (containSuper &!containCLR & !containAck)
+                            if (containSuper & !containCLR & !containAck)
                             {
-                                
+
                                 for (int i = 1; i < areaID.Count(); i++)
                                 {
                                     if (signal_module_sp == "")
                                     {
-                                        statusPanel.Invoke(new Action(() => { 
+                                        statusPanel.Invoke(new Action(() =>
+                                        {
                                             string panelNum = address[4].Substring(0, 4);
                                             Helper.TxtColor2(statusPanel, Color.IndianRed);
-                                            statusPanel.AppendText("SUPERVISORY,  " + panelNum + ",  " + lines[1+portPanelType] + fm200 + "\n");
+                                            statusPanel.AppendText("SUPERVISORY,  " + panelNum + ",  " + lines[1 + panelType] + fm200 + "\n");
                                             statusPanel.ScrollToCaret();
                                         }));
                                         break;
                                     }
                                     if (address[i].Contains(signal_module_sp) & address[i].Contains(currNode))
                                     {
-                                        statusPanel.Invoke(new Action(() => { 
+                                        statusPanel.Invoke(new Action(() =>
+                                        {
                                             Helper.TxtColor2(statusPanel, Color.IndianRed);
-                                            statusPanel.AppendText("SUPERVISORY,  " + ",  " + address[i] + ",  " +
+                                            statusPanel.AppendText("SUPERVISORY,  "  + address[i] + ",  " +
                                             areaID[i].Replace("ZONE ", "Z") + ", " + areaLabel[i] + ", " + addressLabel[i] + fm200 + "\n");
                                             statusPanel.ScrollToCaret();
                                         }));
@@ -1438,17 +1225,19 @@ namespace Airport_GA
                                 {
                                     if (signal_module_sp == "")
                                     {
-                                        statusPanel.Invoke(new Action(() => {
+                                        statusPanel.Invoke(new Action(() =>
+                                        {
                                             string panelNum = address[4].Substring(0, 4);
                                             Helper.TxtColor2(statusPanel, Color.IndianRed);
-                                            statusPanel.AppendText("ACTIVE SUPERVISORY,  " + panelNum + ",  " + lines[1 + portPanelType] + fm200 + "\n");
+                                            statusPanel.AppendText("ACTIVE SUPERVISORY,  " + panelNum + ",  " + lines[1 + panelType] + fm200 + "\n");
                                             statusPanel.ScrollToCaret();
                                         }));
                                         break;
                                     }
                                     if (address[i].Contains(signal_module_sp) & address[i].Contains(currNode))
                                     {
-                                        statusPanel.Invoke(new Action(() => {
+                                        statusPanel.Invoke(new Action(() =>
+                                        {
                                             Helper.TxtColor2(statusPanel, Color.IndianRed);
                                             statusPanel.AppendText("ACTIVE SUPERVISORY,  " + ",  " + address[i] + ",  " +
                                             areaID[i].Replace("ZONE ", "Z") + ", " + areaLabel[i] + ", " + addressLabel[i] + fm200 + "\n");
@@ -1458,9 +1247,9 @@ namespace Airport_GA
                                     }
                                 }
                             }
-                            
+
                         }
-                        catch(Exception ex)
+                        catch (Exception ex)
                         {
                             using (StreamWriter sw = File.AppendText("signalProcessErrorSignal.txt"))
                             {
@@ -1473,34 +1262,35 @@ namespace Airport_GA
             busy = false;
             // Writning to log file
             try
-                { 
-                    using (StreamWriter sw = File.AppendText(logFile))
+            {
+                using (StreamWriter sw = File.AppendText(logFile))
+                {
+                    string[] line_list = completeSignal.Split('|');
+                    line_list[line_list.Count() - 1] = "  " + time.Text + " " + date.Text;
+                    if (Regex.IsMatch(line_list[0], @"^(L\d{2}([D,M])\d{3}|\d{2}([D,M])\d{3}|\dM\d{3}|([D,M])\d{3}|\d{1,3})"))
                     {
-                        string[] line_list = completeSignal.Split('|');
-                        line_list[line_list.Count() - 1] = "  "+time.Text + " " + date.Text;
-                        if (Regex.IsMatch(line_list[0], @"^(L\d{2}([D,M])\d{3}|\d{2}([D,M])\d{3}|\dM\d{3}|([D,M])\d{3}|\d{1,3})"))
-                        {
-                            line_list[0] = Regex.Replace(line_list[0], @"^(L\d{2}([D,M])\d{3}|\d{2}([D,M])\d{3}|\d([D,M])\d{3}|([D,M])\d{3}|\d{1,3})", "");
-                        }
-                        if (Regex.IsMatch(line_list[1], @"^(L\d{2}([D,M])\d{3}|\d{2}([D,M])\d{3}|\dM\d{3}|([D,M])\d{3}|\d{1,3})"))
-                        {
-                            line_list[1] = Regex.Replace(line_list[1], @"^(L\d{2}([D,M])\d{3}|\d{2}([D,M])\d{3}|\d([D,M])\d{3}|([D,M])\d{3}|\d{1,3})", "");
-                        }
-                        completeSignal = string.Join("|", line_list);
-                        if (completeSignal[0] == '|')
-                            completeSignal = completeSignal.Substring(1);
-                        sw.WriteLine(lineCount + "|" + completeSignal + " " + signal_module);
-                        lineCount++;
-                        sw.Close();
+                        line_list[0] = Regex.Replace(line_list[0], @"^(L\d{2}([D,M])\d{3}|\d{2}([D,M])\d{3}|\d([D,M])\d{3}|([D,M])\d{3}|\d{1,3})", "");
+                    }
+                    if (Regex.IsMatch(line_list[1], @"^(L\d{2}([D,M])\d{3}|\d{2}([D,M])\d{3}|\dM\d{3}|([D,M])\d{3}|\d{1,3})"))
+                    {
+                        line_list[1] = Regex.Replace(line_list[1], @"^(L\d{2}([D,M])\d{3}|\d{2}([D,M])\d{3}|\d([D,M])\d{3}|([D,M])\d{3}|\d{1,3})", "");
+                    }
+                    completeSignal = string.Join("|", line_list);
+                    if (completeSignal[0] == '|')
+                        completeSignal = completeSignal.Substring(1);
+                    sw.WriteLine(lineCount + "|" + completeSignal + " " + signal_module);
+                    lineCount++;
+                    sw.Close();
                     try
                     {
-                        alarmLog.Invoke(new Action(() => {
+                        alarmLog.Invoke(new Action(() =>
+                        {
                             if (alarmLog.Lines.Count() > 6)
                             {
-                                if (alarmLog.Lines[alarmLog.Lines.Count()-2].Contains("WAITING"))
+                                if (alarmLog.Lines[alarmLog.Lines.Count() - 2].Contains("WAITING"))
                                 {
                                     int firstCharIndx = alarmLog.GetFirstCharIndexOfCurrentLine();
-                                    int length = alarmLog.Lines[alarmLog.Lines.Count()-2].Length;
+                                    int length = alarmLog.Lines[alarmLog.Lines.Count() - 2].Length;
                                     alarmLog.SelectionStart = firstCharIndx;
                                     alarmLog.SelectionLength = length;
                                     alarmLog.SelectionColor = Color.Black;
@@ -1519,12 +1309,12 @@ namespace Airport_GA
                             string module = modNum640.Match(line).ToString();
                             if (module.Contains("L"))
                                 loop = module[2] + "";
-                            if (currNode == "221")
+                            /*if (currNode == "221")
                                 currFACP = "2";
                             else if (currNode == "222")
                                 currFACP = "3";
                             else
-                                currFACP = "1";
+                                currFACP = "1";*/
 
                             alarmLog.WordWrap = false;
                             Helper.TxtColor(alarmLog, Color.Turquoise);
@@ -1534,7 +1324,7 @@ namespace Airport_GA
                                 alarmLog.AppendText("Event Name: " + line_sig_type + " SYSTEM NORMAL\nNode Address: " + currNode +
                                     " FACP-0" + currFACP + "\nLoop Number: " + loop + "\n\n");
                             else
-                                alarmLog.AppendText("Event Name: " + line_sig_type + " " + module_code+ " " +signal_module + "\nNode Address: " + currNode + " FACP-0" + currFACP +
+                                alarmLog.AppendText("Event Name: " + line_sig_type + " " + module_code + " " + signal_module + "\nNode Address: " + currNode + " FACP-0" + currFACP +
                                     "\nLoop Number: " + loop + "\n\n");
                             Helper.TxtColor(alarmLog, Color.White);
                             alarmLog.AppendText("*** WAITING FOR A NEW EVENT ***\n");
@@ -1543,8 +1333,8 @@ namespace Airport_GA
                             alarmLog.ScrollToCaret();
                         }));
 
-                        
-                        
+
+
                     }
                     catch (Exception ex)
                     {
@@ -1555,81 +1345,77 @@ namespace Airport_GA
                         }
                     }
                 }
-                }
-                catch{}
+            }
+            catch { }
+            alarm[currNodeIndx] = false;
+            trouble[currNodeIndx] = false;
+            super[currNodeIndx] = false;
+            active[currNodeIndx] = false;
             return "";//return ramaining string instead
 
         }
         /**/
-        private void ClosePort_Click(object sender, EventArgs e)
+        private void drawingRotate()
         {
-            if (!testLds.Checked)
-            {
-                if (closePort.Text.Contains("Open"))
-                    try
-                    {
-                        if (com1.Text.Contains("640"))
-                            port1 = new SerialPort(com1.Text.Substring(0, com1.Text.IndexOf('_')), 9600, Parity.Even, 7, StopBits.One);
-                        if (com1.Text.Contains("3030"))
-                        {
-                            port1 = new SerialPort(com1.Text.Substring(0, com1.Text.IndexOf('_')), 9600, Parity.None, 8, StopBits.One);
-                            is_Com1_3030 = true;
-                            defaultTime = "11:51:50A WED APR 14, 2021";
-                        }
-                        else
-                        {
-                            is_Com1_3030 = false;
-                            defaultTime = "07:27A 042821 Wed";
-                        }
-                        port1.Handshake = Handshake.RequestToSendXOnXOff;
-                        // Method to be called when there is data waiting in the port1's buffer 
-                        port1.DataReceived += new SerialDataReceivedEventHandler(Port1_DataReceived);
-                        // Begin communications 
-                        port1.Open();
-                        // Enter an application loop to keep this thread alive 
-                        Console.ReadLine();
-                        closePort.Text = "Close connection\n (" + com1.Text.Substring(0, 4) +")";
-                        com1.Enabled = false;
-                        comStatusLED.BackColor = System.Drawing.Color.Lime;
-                        comStatusLED.Text = "Connected";
-                        testLds.Enabled = false;
-                        alarmLog.WordWrap = false;
-                        Helper.TxtColor(alarmLog, Color.LimeGreen);
-                        alarmLog.AppendText("\n\n*** MIMIC PANEL Monitoring Openned by Supervisor ***\n\n");
-                        alarmLog.ScrollToCaret();
-                        alarmLog.WordWrap = true;
-                        alarmLog.ScrollToCaret();
-                    }
-                    catch
-                    {
-                            MessageBox.Show("Unable to connect to " + com1.Text + ", check cable", "Error connecting to " + com1.Text,
-                            MessageBoxButtons.OK, MessageBoxIcon.Error);
-                    }
-                else if (closePort.Text.Contains("Close"))
+
+            if (!pauseRotat)
+                if (priorityFloor.Count == 0 | priorityFloor.Count == images.Count)
+                    rotationCounter++;
+                else
                 {
-                    port1.Close();
-                    closePort.Text = "Open connection\n (" + com1.Text.Substring(0, 4) +  ")";
-                    com1.Enabled = true;
-                    comStatusLED.BackColor = System.Drawing.Color.IndianRed;
-                    comStatusLED.Text = "Disconnected";
-                    testLds.Enabled = true;
-                    alarmLog.WordWrap = false;
-                    Helper.TxtColor(alarmLog, Color.Red);
-                    alarmLog.AppendText("\n\n*** MIMIC PANEL Monitoring Closed by Supervisor ***\n\n");
-                    alarmLog.WordWrap = true;
-                    alarmLog.ScrollToCaret();
+                    int first = priorityFloor.First.Value;
+                    priorityFloor.RemoveFirst();
+                    priorityFloor.AddLast(first);
+                    rotationCounter = first;
                 }
+
+            for (int i = 0; i < nodeCount; i++)
+            {
+                int realRotationCounter = rotationCounter - 1;
+                Helper.BackupRestoreZones(alarmLEDs[i], alarmLEDs_temp[i], alarmSquare[i], alarmSquare_temp[i], alarmMultiPoint[i], alarmMultiPoint_temp[i], realRotationCounter, drawing_count);
+                Helper.BackupRestoreZones(troubleLEDs[i], troubleLEDs_temp[i], troubleSquare[i], troubleSquare_temp[i], troubleMultiPoint[i], troubleMultiPoint_temp[i], realRotationCounter, drawing_count);
+                Helper.BackupRestoreZones(superLEDs[i], superLEDs_temp[i], superSquare[i], superSquare_temp[i], superMultiPoint[i], superMultiPoint_temp[i], realRotationCounter, drawing_count);
+                Helper.BackupRestoreZones(activeLEDs[i], activeLEDs_temp[i], activeSquare[i], activeSquare_temp[i], activeMultiPoint[i], activeMultiPoint_temp[i], realRotationCounter, drawing_count);
+
             }
-            else {
-                MessageBox.Show("Please stop the test LED first", "Error connecting to " + com1.Text,
-                        MessageBoxButtons.OK, MessageBoxIcon.Error);}
+
+            if (rotationCounter >= images.Count)
+                rotationCounter = 0;
+            drawing.Invoke(new Action(() => { drawing.Image = pngImg[rotationCounter]; }));
+            floor.Invoke(new Action(() => { floor.Text = pngName[rotationCounter]; }));
         }
-        private void Com1_SelectedIndexChanged(object sender, EventArgs e)
+        private void removeLine(string word, string sigType)
         {
-            if(com1.Text.Length > 3)
-                closePort.Text = "Open connection\n (" + com1.Text.Substring(0, 4) + ")";
+            statusPanel.Invoke(new Action(() =>
+            {
+                List<string> finalLines = statusPanel.Lines.ToList();
+                finalLines.RemoveAll(x => x.Contains(word) & x.Contains(sigType));
+                statusPanel.Lines = finalLines.ToArray();
+                if (statusPanel.Lines.Count() < 5000)
+                    Helper.ColorLine(statusPanel);
+                statusPanel.Select(statusPanel.Text.Length, 0);
+                statusPanel.ScrollToCaret();
+            }));
+
         }
 
+        private void gaca_logo_Click(object sender, EventArgs e)
+        {
+            if (!pauseRotat)
+                pauseRotat = true;
+            else
+                pauseRotat = false;
+        }
+        private void Exit_Click(object sender, EventArgs e)
+        {
+            if (clrHist.Checked)
+                System.IO.File.WriteAllText(logFile, string.Empty);
+            Application.Exit();
+        }
+        private void Minimize(object sender, EventArgs e)
+        {
+            this.WindowState = FormWindowState.Minimized;
+        }
         private void TestLds_CheckedChanged(object sender, EventArgs e)
         {
             if (testLds.Checked)
@@ -1645,7 +1431,7 @@ namespace Airport_GA
                         foreach (string uz in multiPointZoneCoord[(j) % drawing_count].Keys)
                             alarmMultiPoint[i][j].Add(multiPointZoneCoord[(j) % drawing_count][uz]);
                     }
-                }         
+                }
             }
 
             else
@@ -1665,63 +1451,477 @@ namespace Airport_GA
                     foreach (List<PointF[]> alarmununiform in alarmMultiPoint_temp[i])
                         alarmununiform.Clear();
                 }
-                    
+
             }
         }
         private void Label16_Click(object sender, EventArgs e)
         {
             this.WindowState = FormWindowState.Minimized;
         }
-        
-        private void drawingRotate()
+        private void ClosePort_Click(object sender, EventArgs e)
         {
+            if (!testLds.Checked)
+            {
+                if (closePort.Text.Contains("Open"))
+                    try
+                    {
+                        DialogResult dr = MessageBox.Show("Do you want to reload everythig?", "      Reloading data", MessageBoxButtons.YesNoCancel, MessageBoxIcon.Question);
+                        if (dr == DialogResult.Yes)
+                        {
+                            LoadAllData();
+                        }
+                        else if (dr == DialogResult.No)
+                        {
+                            if (com1.Text.Contains("640"))
+                                port1 = new SerialPort(com1.Text.Substring(0, com1.Text.IndexOf('_')), 9600, Parity.Even, 7, StopBits.One);
+                            if (com1.Text.Contains("3030"))
+                            {
+                                port1 = new SerialPort(com1.Text.Substring(0, com1.Text.IndexOf('_')), 9600, Parity.None, 8, StopBits.One);
+                                is_Com1_3030 = true;
+                                defaultTime = "11:51:50A WED APR 14, 2021";
+                            }
+                            else
+                            {
+                                is_Com1_3030 = false;
+                                defaultTime = "07:27A 042821 Wed";
+                            }
 
-            if(!pauseRotat)
-            if (priorityFloor.Count == 0 | priorityFloor.Count == images.Count)
-                rotationCounter++;
+                            port1.Handshake = Handshake.RequestToSendXOnXOff;
+                            // Method to be called when there is data waiting in the port1's buffer 
+                            port1.DataReceived += new SerialDataReceivedEventHandler(Port1_DataReceived);
+                            // Begin communications 
+                            port1.Open();
+                        }
+                        else
+                            return;
+                            // Enter an application loop to keep this thread alive 
+                        Console.ReadLine();
+                        closePort.Text = "Close connection\n (" + com1.Text.Substring(0, 4) + ")";
+                        com1.Enabled = false;
+                        comStatusLED.BackColor = System.Drawing.Color.Lime;
+                        comStatusLED.Text = "Connected";
+                        testLds.Enabled = false;
+                        alarmLog.WordWrap = false;
+                        Helper.TxtColor(alarmLog, Color.LimeGreen);
+                        alarmLog.AppendText("\n\n*** MIMIC PANEL Monitoring Openned by Supervisor ***\n\n");
+                        alarmLog.ScrollToCaret();
+                        alarmLog.WordWrap = true;
+                        alarmLog.ScrollToCaret();
+                    }
+                    catch
+                    {
+                        MessageBox.Show("Unable to connect to " + com1.Text + ", check cable", "Error connecting to " + com1.Text,
+                        MessageBoxButtons.OK, MessageBoxIcon.Error);
+                    }
+                else if (closePort.Text.Contains("Close"))
+                {
+                    port1.Close();
+                    closePort.Text = "Open connection\n (" + com1.Text.Substring(0, 4) + ")";
+                    com1.Enabled = true;
+                    comStatusLED.BackColor = System.Drawing.Color.IndianRed;
+                    comStatusLED.Text = "Disconnected";
+                    testLds.Enabled = true;
+                    alarmLog.WordWrap = false;
+                    Helper.TxtColor(alarmLog, Color.Red);
+                    alarmLog.AppendText("\n\n*** MIMIC PANEL Monitoring Closed by Supervisor ***\n\n");
+                    alarmLog.WordWrap = true;
+                    alarmLog.ScrollToCaret();
+                }
+            }
             else
             {
-                int first = priorityFloor.First.Value;
-                priorityFloor.RemoveFirst();
-                priorityFloor.AddLast(first);
-                rotationCounter = first;
+                MessageBox.Show("Please stop the test LED first", "Error connecting to " + com1.Text,
+                        MessageBoxButtons.OK, MessageBoxIcon.Error);
+            }
+        }
+        private void Com1_SelectedIndexChanged(object sender, EventArgs e)
+        {
+            if (com1.Text.Length > 3)
+                closePort.Text = "Open connection\n (" + com1.Text.Substring(0, 4) + ")";
+        }
+        private void LoadAllData()
+        {
+            images = Directory.GetFiles("img", "*.png*", SearchOption.AllDirectories).OrderBy(f => f).ToList();
+            zonesCSV = Directory.GetFiles("zones", "*.csv*", SearchOption.AllDirectories).OrderBy(f => f).ToList();
+            nodes = new List<string>();
+            floorInDrawing.Clear();
+            using (var reader = new StreamReader("drawingMapping.txt"))
+            {
+                while (!reader.EndOfStream)
+                {
+                    var line = reader.ReadLine();
+                    var values = line.Split('|');
+                    floorInDrawing.Add(values[0], Int32.Parse(values[1]));
+                }
             }
 
+            using (StreamReader sr = File.OpenText("Default.txt"))
+            {
+                defaults = sr.ReadLine();
+                sr.Close();
+            }
+            string[] defaultSetting = defaults.Split('|');
+            switch (defaultSetting[1])
+            {
+                case "3030":
+                    panelType = 0;
+                    break;
+                case "640":
+                    panelType = 1;
+                    break;
+            }
+
+            //log_hash = Helper.GetMD5HashFromFile(logFile);
+            try // Loading Database and Drawings
+            {
+                drawing.Image = Image.FromFile(images[0]);
+                switch (defaultSetting[0])
+                {
+                    case "s":
+                        drawing.SizeMode = System.Windows.Forms.PictureBoxSizeMode.StretchImage;
+                        break;
+                    case "z":
+                        drawing.SizeMode = System.Windows.Forms.PictureBoxSizeMode.Zoom;
+                        break;
+                    case "c":
+                        var imageSize = drawing.Image.Size;
+                        var fitSize = drawing.ClientSize;
+                        drawing.SizeMode = imageSize.Width > fitSize.Width || imageSize.Height > fitSize.Height ?
+                            PictureBoxSizeMode.Zoom : PictureBoxSizeMode.CenterImage;
+                        break;
+                }
+                ga_idx = floorInDrawing[defaultSetting[3]];
+                pngImg.Clear(); pngName.Clear();
+                foreach (string imgDir in images)
+                {
+                    if (imgDir.Contains("png"))
+                    {
+                        pngImg.Add(Image.FromFile(imgDir));
+                        pngName.Add(imgDir.Split('_')[1].Split('.')[0].Replace('^', '.'));
+                    }
+                }
+                
+                database = Directory.GetFiles("database", "*.csv")[0];
+                using (var reader = new StreamReader(database))
+                {
+                    //Regex CSVParser = new Regex(",(?=(?:[^\"]*\"[^\"]*\")*(?![^\"]*\"))"); this is a general split
+                    //String[] Fields = CSVParser.Split(Test);
+                    first_column.Clear(); areaID.Clear(); address.Clear(); addressLabel.Clear(); areaLabel.Clear(); nodes.Clear();
+                    while (!reader.EndOfStream)
+                    {
+                        var line = reader.ReadLine();
+                        var values = line.Split(',');
+                        first_column.Add(values[0]);
+                        areaID.Add(values[1]);
+                        address.Add(values[2]);
+                        addressLabel.Add(values[3]);
+                        areaLabel.Add(values[4]);
+                        if (values[1].Contains("ZONE"))
+                        {
+                            string nodeNum = values[2].Substring(1, values[2].IndexOf("L") - 1);
+                            if (!nodes.Contains(nodeNum))
+                                nodes.Add(nodeNum);
+                        }
+                    }
+                    label6.Text = label6.Text + nodes[0];
+                    building_label.Text = first_column[0].Replace('|', ',');
+                    databaseLED.BackColor = System.Drawing.Color.Lime;
+                    databaseLED.Text = "DataBase is OK";
+                }
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show("Unable to read Database file, Defaults, Drawing Mapping or Drawings", "Error reading database file", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                using (StreamWriter sw = File.AppendText("databaseDrawingError.txt"))
+                {
+                    sw.WriteLine(ex + "\n : [!377] " + time.Text + ", " + DateTime.Now.ToString("hh:mm:ss tt") + "\n\n");
+                    sw.Close();
+                }
+            }
+            currFACP = defaultSetting[2];
+            drawing_count = images.Count;
+            // initialize the alarm, trouble and super for the LED, uniform and unUniform
+            alarmLEDs.Clear(); troubleLEDs.Clear(); superLEDs.Clear(); activeLEDs.Clear();
+            alarmLEDs_temp.Clear(); troubleLEDs_temp.Clear(); superLEDs_temp.Clear(); activeLEDs_temp.Clear();
+            alarmSquare.Clear(); troubleSquare.Clear(); superSquare.Clear(); activeSquare.Clear();
+            alarmSquare_temp.Clear(); troubleSquare_temp.Clear(); superSquare_temp.Clear(); activeSquare_temp.Clear();
+            alarmMultiPoint.Clear(); troubleMultiPoint.Clear(); superMultiPoint.Clear(); activeMultiPoint.Clear();
+            alarmMultiPoint_temp.Clear(); troubleMultiPoint_temp.Clear(); superMultiPoint_temp.Clear(); activeMultiPoint_temp.Clear();
             for (int i = 0; i < nodeCount; i++)
             {
-                int realRotationCounter = rotationCounter - 1;
-                Helper.BackupRestoreZones(alarmLEDs[i], alarmLEDs_temp[i], alarmSquare[i], alarmSquare_temp[i], alarmMultiPoint[i], alarmMultiPoint_temp[i], realRotationCounter, drawing_count);
-                Helper.BackupRestoreZones(troubleLEDs[i], troubleLEDs_temp[i], troubleSquare[i], troubleSquare_temp[i], troubleMultiPoint[i], troubleMultiPoint_temp[i], realRotationCounter, drawing_count);
-                Helper.BackupRestoreZones(superLEDs[i], superLEDs_temp[i], superSquare[i], superSquare_temp[i], superMultiPoint[i], superMultiPoint_temp[i], realRotationCounter, drawing_count);
-                Helper.BackupRestoreZones(activeLEDs[i], activeLEDs_temp[i], activeSquare[i], activeSquare_temp[i], activeMultiPoint[i], activeMultiPoint_temp[i], realRotationCounter, drawing_count);
+                alarmLEDs.Add(new List<List<RectangleF>>());
+                troubleLEDs.Add(new List<List<RectangleF>>());
+                superLEDs.Add(new List<List<RectangleF>>());
+                activeLEDs.Add(new List<List<RectangleF>>());
+
+                alarmLEDs_temp.Add(new List<List<RectangleF>>());
+                troubleLEDs_temp.Add(new List<List<RectangleF>>());
+                superLEDs_temp.Add(new List<List<RectangleF>>());
+                activeLEDs_temp.Add(new List<List<RectangleF>>());
+
+                alarmSquare.Add(new List<List<RectangleF>>());
+                troubleSquare.Add(new List<List<RectangleF>>());
+                superSquare.Add(new List<List<RectangleF>>());
+                activeSquare.Add(new List<List<RectangleF>>());
+
+                alarmSquare_temp.Add(new List<List<RectangleF>>());
+                troubleSquare_temp.Add(new List<List<RectangleF>>());
+                superSquare_temp.Add(new List<List<RectangleF>>());
+                activeSquare_temp.Add(new List<List<RectangleF>>());
+
+                alarmMultiPoint.Add(new List<List<PointF[]>>());
+                troubleMultiPoint.Add(new List<List<PointF[]>>());
+                superMultiPoint.Add(new List<List<PointF[]>>());
+                activeMultiPoint.Add(new List<List<PointF[]>>());
+
+                alarmMultiPoint_temp.Add(new List<List<PointF[]>>());
+                troubleMultiPoint_temp.Add(new List<List<PointF[]>>());
+                superMultiPoint_temp.Add(new List<List<PointF[]>>());
+                activeMultiPoint_temp.Add(new List<List<PointF[]>>());
+            }
+            // Loading Zones Border, Led and youAreHere.
+            try
+            {
+                zoneLEDCoord.Clear(); squareZoneCoord.Clear(); multiPointZoneCoord.Clear();
+                ledZoneLabel.Clear(); ledZone.Clear(); squareZoneLabel.Clear(); squareZone.Clear(); multiPointZoneLabel.Clear(); multiPointZone.Clear();
+                alarm.Clear(); trouble.Clear(); super.Clear(); active.Clear(); troubleCount.Clear(); superCount.Clear(); activeCount.Clear();
+                for (int i = 0; i < drawing_count; i++)
+                {
+                    // initalize the dictionaries with the number of drawing (set the list size)
+                    zoneLEDCoord.Add(new Dictionary<string, RectangleF>());
+                    squareZoneCoord.Add(new Dictionary<string, RectangleF>());
+                    multiPointZoneCoord.Add(new Dictionary<string, PointF[]>());
+                    // initalize the List size with the number of drawing
+                    ledZoneLabel.Add(new List<string>());
+                    ledZone.Add(new List<string>());
+                    squareZoneLabel.Add(new List<string>());
+                    squareZone.Add(new List<string>());
+                    multiPointZoneLabel.Add(new List<string>());
+                    multiPointZone.Add(new List<string>());
+                    alarm.Add(new bool());
+                    trouble.Add(new bool());
+                    super.Add(new bool());
+                    active.Add(new bool());
+                    troubleCount.Add(new int());
+                    superCount.Add(new int());
+                    activeCount.Add(new int());
+
+
+                    using (var reader = new StreamReader(zonesCSV[i]))
+                    {
+
+
+                        while (!reader.EndOfStream)
+                        {
+                            var line = reader.ReadLine();
+                            var values = line.Split(',');
+                            ledZoneLabel[i].Add(values[0]);
+                            ledZone[i].Add(values[1]);
+                        }
+                    }
+                    using (var reader = new StreamReader(zonesCSV[i + drawing_count]))
+                    {
+
+                        while (!reader.EndOfStream)
+                        {
+                            var line = reader.ReadLine();
+                            var values = line.Split(',');
+                            squareZoneLabel[i].Add(values[0]);
+                            squareZone[i].Add(values[1]);
+                        }
+                    }
+                    using (var reader = new StreamReader(zonesCSV[i + drawing_count * 2]))
+                    {
+
+                        while (!reader.EndOfStream)
+                        {
+                            var line = reader.ReadLine();
+                            var values = line.Split(',');
+                            multiPointZoneLabel[i].Add(values[0]);
+                            multiPointZone[i].Add(values[1]);
+                        }
+                    }
+
+                }
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show("Unable to process Database data'" + database + "'", "Error reading database file", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                using (StreamWriter sw = File.AppendText("databaseProcessingError.txt"))
+                {
+                    sw.WriteLine(ex + "\n : [!377] " + time.Text + ", " + DateTime.Now.ToString("hh:mm:ss tt") + "\n\n");
+                    sw.Close();
+                }
+            }
+            
+                using (var reader = new StreamReader(zonesCSV[drawing_count * 3]))
+                {
+                    youAreHereCoord.Clear();
+                    while (!reader.EndOfStream)
+                    {
+                        var line = reader.ReadLine();
+                        var values = line.Split(',');
+                        youAreHereCoord.Add(values[0]);
+                        var sizes = values[1].Split('|');
+                        led_size = Int32.Parse(sizes[0]);
+                        borderSize = Int32.Parse(sizes[1]);
+                    }
+                }
+                youAreHereInt = youAreHereCoord[0].Split('|').Select(Int32.Parse).ToList();
+            
+            
+
+            try
+            {
+                // Initialize the list of lists with 3 lists
+                for (int i = 0; i < drawing_count; i++)
+                {
+                    for (int j = 0; j < nodeCount; j++)
+                    {
+                        alarmLEDs[j].Add(new List<RectangleF>());
+                        troubleLEDs[j].Add(new List<RectangleF>());
+                        superLEDs[j].Add(new List<RectangleF>());
+                        activeLEDs[j].Add(new List<RectangleF>());
+
+                        alarmLEDs_temp[j].Add(new List<RectangleF>());
+                        troubleLEDs_temp[j].Add(new List<RectangleF>());
+                        superLEDs_temp[j].Add(new List<RectangleF>());
+                        activeLEDs_temp[j].Add(new List<RectangleF>());
+
+                        alarmSquare[j].Add(new List<RectangleF>());
+                        troubleSquare[j].Add(new List<RectangleF>());
+                        superSquare[j].Add(new List<RectangleF>());
+                        activeSquare[j].Add(new List<RectangleF>());
+
+                        alarmSquare_temp[j].Add(new List<RectangleF>());
+                        troubleSquare_temp[j].Add(new List<RectangleF>());
+                        superSquare_temp[j].Add(new List<RectangleF>());
+                        activeSquare_temp[j].Add(new List<RectangleF>());
+
+
+                        alarmMultiPoint[j].Add(new List<PointF[]>());
+                        troubleMultiPoint[j].Add(new List<PointF[]>());
+                        superMultiPoint[j].Add(new List<PointF[]>());
+                        activeMultiPoint[j].Add(new List<PointF[]>());
+
+
+                        alarmMultiPoint_temp[j].Add(new List<PointF[]>());
+                        troubleMultiPoint_temp[j].Add(new List<PointF[]>());
+                        superMultiPoint_temp[j].Add(new List<PointF[]>());
+                        activeMultiPoint_temp[j].Add(new List<PointF[]>());
+                    }
+                }
+            }
+            catch
+            { }
+
+            float x = resolution.Width / 1920;
+            float y = resolution.Height / 1080;
+            // Dictionary for zone locations on the drawing, MAKE THIS DYNAMIC
+            try
+            {
+                for (int i = 0; i < drawing_count; i++)
+                {
+                    for (int j = 1; j < ledZone[i].Count; j++)
+                    {
+                        string[] coord = ledZone[i][j].Split('|');
+                        zoneLEDCoord[i].Add(ledZoneLabel[i][j], new RectangleF(Int32.Parse(coord[0]) * x, Int32.Parse(coord[1]) * y, led_size * x, led_size * y));
+                    }
+                    for (int j = 1; j < squareZone[i].Count; j++)
+                    {
+                        string[] coord = squareZone[i][j].Split('|');
+                        squareZoneCoord[i].Add(squareZoneLabel[i][j], new RectangleF(Int32.Parse(coord[0]) * x, Int32.Parse(coord[1]) * y, Int32.Parse(coord[2]) * x, Int32.Parse(coord[3]) * y));
+                    }
+                    for (int j = 1; j < multiPointZone[i].Count; j++)
+                    {
+
+                        string[] coord = multiPointZone[i][j].Split(';');
+                        PointF[] zonePoints = new PointF[coord.Count()];
+                        for (int k = 0; k < coord.Count(); k++)
+                            zonePoints[k] = new PointF(Int32.Parse(coord[k].Split('|')[0]) * x, Int32.Parse(coord[k].Split('|')[1]) * y);
+                        multiPointZoneCoord[i].Add(multiPointZoneLabel[i][j], zonePoints);
+                    }
+
+                }
 
             }
+            catch
+            {
+                //statusPanel.AppendText(ledZone.Count+"");
+            }
 
-            if (rotationCounter >= images.Count)
-                rotationCounter = 0;
-            drawing.Invoke(new Action(() => { drawing.Image = pngImg[rotationCounter];}));
-            floor.Invoke(new Action(() => {floor.Text = pngName[rotationCounter];}));
-        }
-        private void removeLine(string word, string sigType)
-        {
-            statusPanel.Invoke(new Action(() => {
-                List<string> finalLines = statusPanel.Lines.ToList();
-                finalLines.RemoveAll(x => x.Contains(word) & x.Contains(sigType));
-                statusPanel.Lines = finalLines.ToArray();
-                if (statusPanel.Lines.Count() < 30)
-                    Helper.ColorLine(statusPanel);
-                statusPanel.Select(statusPanel.Text.Length,0);
-                statusPanel.ScrollToCaret();
-            }));
+            string[] ports = SerialPort.GetPortNames();
+            com1.Items.Clear();
+            foreach (string port in ports)
+            {
+                com1.Items.Add(port + "_640");
+                com1.Items.Add(port + "_3030");
+            }
+            supervisoryLED.Hide();
+            Helper.TxtColor(alarmLog, Color.White);
+            alarmLog.AppendText("Application just Started ............... \n\n");
 
-        }
+            // If all buildings with 2 or more panles always have 3030 then no need to change this
+            try
+            {
+                com1.SelectedIndex = panelType;
+                //closePort.Text = "Open connection\n (" + com1.Text.Substring(0, 4) + ", "+ com2.Text.Substring(0, 4) + ")";
+            }
+            catch (Exception e)
+            {
+                MessageBox.Show("No COM Ports found " + e, "Error connecting to COM Port ",
+                    MessageBoxButtons.OK, MessageBoxIcon.Error);
+            }
 
-        private void gaca_logo_Click(object sender, EventArgs e)
-        {
-            if (!pauseRotat)
-                pauseRotat = true;
-            else
-                pauseRotat = false;
+            try
+            {
+                if (com1.Text.Contains("640"))
+                    port1 = new SerialPort(com1.Text.Substring(0, com1.Text.IndexOf('_')), 9600, Parity.Even, 7, StopBits.One);
+                if (com1.Text.Contains("3030"))
+                {
+                    port1 = new SerialPort(com1.Text.Substring(0, com1.Text.IndexOf('_')), 9600, Parity.None, 8, StopBits.One);
+                    is_Com1_3030 = true;
+                    defaultTime = "11:51:50A WED APR 14, 2021";
+                }
+                else
+                {
+                    is_Com1_3030 = false;
+                    defaultTime = "07:27A 042821 Wed";
+                }
+
+
+                if (port1 != null)
+                {
+                    port1.Handshake = Handshake.RequestToSendXOnXOff;
+                    // Method to be called when there is data waiting in the port1's buffer 
+                    port1.DataReceived += new SerialDataReceivedEventHandler(Port1_DataReceived);
+                    // Begin communications 
+                    port1.Open();
+                    // Enter an application loop to keep this thread alive 
+                    Console.ReadLine();
+                    closePort.Text = "Close connection\n (" + com1.Text.Substring(0, 4) + ")";
+                    com1.Enabled = false;
+                    comStatusLED.BackColor = System.Drawing.Color.Lime;
+                    comStatusLED.Text = "Connected";
+                    testLds.Enabled = false;
+                    alarmLog.WordWrap = false;
+                    Helper.TxtColor(alarmLog, Color.LimeGreen);
+                    alarmLog.AppendText("\n\n*** MIMIC PANEL Monitoring Openned by Supervisor ***\n\n");
+                    alarmLog.ScrollToCaret();
+                    alarmLog.WordWrap = true;
+                    alarmLog.ScrollToCaret();
+                }
+            }
+            catch
+            {
+                MessageBox.Show("Unable to connect to " + com1.Text + ", check cable", "Error connecting to " + com1.Text,
+                    MessageBoxButtons.OK, MessageBoxIcon.Error);
+            }
+            using (StreamReader r = new StreamReader(logFile))
+            {
+                while (r.ReadLine() != null)
+                    lineCount++;
+            }
         }
     }
 }
