@@ -739,7 +739,6 @@ namespace Airport_GA
             }
             if (containSuper & !containAck & !containCLR)
             {
-                MessageBox.Show(completeSignal);
                 if (modNum3030.IsMatch(completeSignal) | modNum640.IsMatch(completeSignal))
                 {
                     alarm[currNodeIndx] = false;
