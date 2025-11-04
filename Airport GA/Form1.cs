@@ -198,7 +198,7 @@ namespace Airport_GA
         Regex modNum640 = new Regex(@"\d{1}([D,M])\d{3}");
 
         Regex modCode = new Regex(@"GEN ALARM|GEN TROUBL");
-        Regex powerModule = new Regex(@"L\d{2}M1[4,5][5-9]");
+        Regex powerModule = new Regex(@"L01M15[5-9]");
 
         Regex sep3030 = new Regex(@"\d{2},\s\d{4}\s{2,}L\d{2}[M,D]\d{3}|\d{2},\s\d{4}\s{2,}");
         Regex sep640 = new Regex(@"\d{6}\s{1,}[A-Z][a-z][a-z]|\d{6}\s{1,}\d[M,D]\d{3}");
@@ -650,7 +650,7 @@ namespace Airport_GA
             }
             if (startWithTrouble & !containAck & !containCLR)
             {
-                if ((modNum3030.IsMatch(completeSignal) | modNum640.IsMatch(completeSignal)))
+                if (((modNum3030.IsMatch(completeSignal) & !powerModule.IsMatch(completeSignal) ) | (modNum640.IsMatch(completeSignal)&!is_Com1_3030 )))
                 {
                     alarm[currNodeIndx] = false;
                     trouble[currNodeIndx] = true;
@@ -664,9 +664,8 @@ namespace Airport_GA
                         Helper.TxtColor2(statusPanel, Color.Orange);
                         if (completeSignal.Contains("BATTERY") | completeSignal.Contains("L01M157"))
                         {
-                            powerLED.BackColor = Color.Red;
                             powerLED.Text = "BATTERY FAIL";
-                            powerFail.Add("battry");
+                            powerFail.Add("BATTERY FAIL");
                             if (is_Com1_3030)
                                 statusPanel.AppendText("TROUBLE, BATTERY FAILURE, L01M157\n");
                             else
@@ -674,9 +673,8 @@ namespace Airport_GA
                         }
                         else if (completeSignal.Contains("AC FAIL") | completeSignal.Contains("1M156"))
                         {
-                            powerLED.BackColor = Color.Red;
                             powerLED.Text = "AC FAIL";
-                            powerFail.Add("AC");
+                            powerFail.Add("AC FAIL");
                             if (is_Com1_3030)
                                 statusPanel.AppendText("TROUBLE, AC FAILURE, L01M156\n");
                             else
@@ -684,7 +682,6 @@ namespace Airport_GA
                         }
                         else if (completeSignal.Contains("GENERAL MON") | completeSignal.Contains("1M155"))
                         {
-                            powerLED.BackColor = Color.Red;
                             powerLED.Text = "GENERAL MON";
                             powerFail.Add("GENERAL MON");
                             if (is_Com1_3030)
@@ -695,9 +692,8 @@ namespace Airport_GA
                         }
                         else if (completeSignal.Contains("EARTH") | completeSignal.Contains("1M158"))
                         {
-                            powerLED.BackColor = Color.Red;
                             powerLED.Text = "EARTH FAIL";
-                            powerFail.Add("EARTH");
+                            powerFail.Add("EARTH FAIL");
                             if (is_Com1_3030)
                                 statusPanel.AppendText("TROUBLE, EARTH FAILURE, L01M158\n");
                             else
@@ -706,9 +702,8 @@ namespace Airport_GA
                         }
                         else if (completeSignal.Contains("CHARGER FAIL") | completeSignal.Contains("1M159"))
                         {
-                            powerLED.BackColor = Color.Red;
                             powerLED.Text = "CHARGER FAIL";
-                            powerFail.Add("CHARGER");
+                            powerFail.Add("CHARGER FAIL");
                             if (is_Com1_3030)
                                 statusPanel.AppendText("TROUBLE, CHARGER FAILURE, L01M159\n");
                             else
@@ -733,6 +728,10 @@ namespace Airport_GA
                         }
                         else
                             statusPanel.AppendText("TROUBLE, " + lines[1] + "\n");
+                        if( powerFail.Any())
+                        {
+                            powerLED.BackColor = Color.Red;
+                        }
                     }));
                 }
 
@@ -740,6 +739,7 @@ namespace Airport_GA
             }
             if (containSuper & !containAck & !containCLR)
             {
+                MessageBox.Show(completeSignal);
                 if (modNum3030.IsMatch(completeSignal) | modNum640.IsMatch(completeSignal))
                 {
                     alarm[currNodeIndx] = false;
@@ -794,30 +794,30 @@ namespace Airport_GA
                 {
                     if (completeSignal.Contains("BATT") | completeSignal.Contains("1M157"))
                     {
-                        powerFail.Remove("battry");
+                        powerFail.Remove("BATTERY FAIL");
                         removeLine("BATT", "TROUBLE");
                     }
-                    if (completeSignal.Contains("AC FAIL") | completeSignal.Contains("1M156"))
+                    else if (completeSignal.Contains("AC FAIL") | completeSignal.Contains("1M156"))
                     {
-                        powerFail.Remove("AC");
+                        powerFail.Remove("AC FAIL");
                         removeLine("AC FAIL", "TROUBLE");
                     }
-                    if (completeSignal.Contains("EARTH") | completeSignal.Contains("1M158"))
+                    else if (completeSignal.Contains("EARTH") | completeSignal.Contains("1M158"))
                     {
-                        powerFail.Remove("EARTH");
+                        powerFail.Remove("EARTH FAIL");
                         removeLine("EARTH", "TROUBLE");
                     }
-                    if (completeSignal.Contains("CHARGER") | completeSignal.Contains("1M159"))
+                    else if (completeSignal.Contains("CHARGER") | completeSignal.Contains("1M159"))
                     {
-                        powerFail.Remove("CHARGER");
+                        powerFail.Remove("CHARGER FAIL");
                         removeLine("CHARGER", "TROUBLE");
                     }
-                    if (completeSignal.Contains("GENERAL MON") | completeSignal.Contains("1M155"))
+                    else if (completeSignal.Contains("GENERAL MON") | completeSignal.Contains("1M155"))
                     {
                         powerFail.Remove("GENERAL MON");
                         removeLine("GENERAL MON", "TROUBLE");
                     }
-                    if (completeSignal.Contains("NCM COMM FAILURE"))
+                    else if(completeSignal.Contains("NCM COMM FAILURE"))
                     {
                         removeLine("COMMUNICATION FAILURE (NCM)", "TROUBLE");
                     }
@@ -841,6 +841,12 @@ namespace Airport_GA
                             powerLED.Text = "";
                         }));
                     }
+                    else
+                        powerLED.Invoke(new Action(() =>
+                        {
+                            powerLED.BackColor = Color.Red;
+                            powerLED.Text = powerFail[0];
+                        }));
                     removeLine(completeSignal.Split('|')[1], "TROUBLE");
 
                 }

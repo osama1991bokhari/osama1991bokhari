@@ -904,3 +904,185 @@ INITIATED BY     N171                    11:31:29A THU SEP 18, 2025
 CLEARED SUPERVISORY                 OPEN CIRCUIT     TRANSFORMER          GS-T-TR-12  
                             TROUBLE MON  11:35:24A THU SEP 18, 2025     L02M157
 >
+<
+
+CLEARED SUPERVISORY                 OPEN CIRCUIT     TRANSFORMER          GS-T-TR-12  
+                            TROUBLE MON  11:35:24A THU SEP 18, 2025     L02M157
+>
+<
+
+CLEARED SUPERVISORY                 OPEN CIRCUIT     TRANSFORMER          GS-T-TR-12  
+                            TROUBLE MON  11:35:24A THU SEP 18, 2025     L02M157
+>
+<SUPERVISORY                 OPEN CIRCUIT     TRANSFORMER          GS-T-TR-12  
+                            TROUBLE MON  11:35:24A THU SEP 18, 2025     L02M002>
+<SUPERVISORY                 OPEN CIRCUIT     TRANSFORMER          GS-T-TR-12  
+                            TROUBLE MON  11:35:24A THU SEP 18, 2025     L02M002>
+<
+TROUBLE                 GROUND FAULT     Module L01M158                   
+                            POWER MONITR 10:05:13A THU SEP 25, 2025     L01M158
+>
+<
+TROUBLE                 GROUND FAULT     Module L01M158                   
+                            POWER MONITR 10:05:13A THU SEP 25, 2025     L01M158
+>
+<
+TROUBLE                 GROUND FAULT     Module L01M157                   
+                            POWER MONITR 10:05:13A THU SEP 25, 2025     L01M158
+>
+<
+TROUBLE                 BATTERY FAIL     Module L01M157                   
+                            POWER MONITR 10:05:13A THU SEP 25, 2025     L01M158
+>
+<
+TROUBLE                 BATTERY FAIL     Module L01M157                   
+                            POWER MONITR 10:05:13A THU SEP 25, 2025     L01M158
+>
+<
+TROUBLE                 BATTERY FAIL     Module L01M157                   
+                            POWER MONITR 10:05:13A THU SEP 25, 2025     L01M158
+>
+<
+TROUBLE                 BATTERY FAIL     Module L01M157                   
+                            POWER MONITR 10:05:13A THU SEP 25, 2025     L01M158
+>
+<
+TROUBLE                 BATTERY FAIL     Module L01M157                   
+                            POWER MONITR 10:05:13A THU SEP 25, 2025     L01M157>
+<
+TROUBLE                 BATTERY FAIL     Module L01M157                   
+                            POWER MONITR 10:05:13A THU SEP 25, 2025     L01M157>
+<
+TROUBLE                 BATTERY LOW      Module L01M157                   
+                            POWER MONITR 12:40:53P MON JUN 02, 2025     L01M157>
+<
+TROUBLE                 BATTERY LOW      Module L01M157                   
+                            POWER MONITR 12:40:53P MON JUN 02, 2025     L01M157>
+<
+TROUBLE                 BATTERY LOW      Module L01M157                   
+                            POWER MONITR 12:40:53P MON JUN 02, 2025     L01M157>
+<
+TROUBLE                 BATTERY LOW      Module L01M157                   
+                            POWER MONITR 12:40:53P MON JUN 02, 2025     L01M157>
+<
+TROUBLE                 BATTERY LOW      Module L01M157                   
+                            POWER MONITR 12:40:53P MON JUN 02, 2025     L01M157>
+<
+TROUBLE                 BATTERY LOW      Module L01M157                   
+                            POWER MONITR 12:40:53P MON JUN 02, 2025     L01M157>
+<
+TROUBLE                 BATTERY LOW      Module L01M157                   
+                            POWER MONITR 12:40:53P MON JUN 02, 2025     L01M157>
+<
+TROUBLE                 BATTERY LOW      Module L01M157                   
+                            POWER MONITR 12:40:53P MON JUN 02, 2025     L01M157
+>
+<
+TROUBLE      
+TROUBLE                 BATTERY LOW      Module L01M157                   
+                            POWER MONITR 12:40:53P MON JUN 02, 2025     L01M157
+>
+<
+TROUBLE                 BATTERY LOW      Module L01M157                   
+                            POWER MONITR 12:40:53P MON JUN 02, 2025     L01M157
+>
+<
+TROUBLE                 BATTERY LOW      Module L01M157                   
+                            POWER MONITR 12:40:53P MON JUN 02, 2025     L01M157
+>
+<
+TROUBLE                 BATTERY LOW      Module L01M157                   
+                            POWER MONITR 12:40:53P MON JUN 02, 2025     L01M157
+>
+<
+TROUBLE                 BATTERY LOW      Module L01M157                   
+                            POWER MONITR 12:40:53P MON JUN 02, 2025     L01M157
+>
+<
+TROUBLE                 BATTERY LOW      Module L01M157                   
+                            POWER MONITR 12:40:53P MON JUN 02, 2025     L01M157
+>
+<
+TROUBLE                 BATTERY LOW      Module L01M157                   
+                            POWER MONITR 12:40:53P MON JUN 02, 2025     L01M157
+>
+<
+
+TROUBLE                 GROUND FAULT     Module L01M158                   
+                            POWER MONITR 10:05:13A THU SEP 25, 2025     L01M158
+>
+<CELARED
+
+TROUBLE                 GROUND FAULT     Module L01M158                   
+                            POWER MONITR 10:05:13A THU SEP 25, 2025     L01M158
+>
+<CELARED
+
+TROUBLE                 BATTERY  FAULT     Module L01M157                   
+                            POWER MONITR 10:05:13A THU SEP 25, 2025     L01M157
+>
+<CELARED
+
+TROUBLE                 BATTERY  FAULT     Module L01M157                   
+                            POWER MONITR 10:05:13A THU SEP 25, 2025     L01M157
+>
+<
+
+CLEARED TROUBLE                          Module L01M158                   
+                            POWER MONITR 10:10:31A THU SEP 25, 2025     L01M158
+>
+<
+
+TROUBLE                 GROUND FAULT     Module L01M158                   
+                            POWER MONITR 10:05:13A THU SEP 25, 2025     L01M158
+>
+<
+
+TROUBLE                 BATTERY LOW      Module L01M157                   
+                            POWER MONITR 10:57:41A WED SEP 17, 2025     L01M157
+>
+<
+
+TROUBLE                 AC FAILURE       Module L01M156                   
+                            POWER MONITR 10:55:35A WED SEP 17, 2025     L01M156
+>
+<
+
+CLEARED TROUBLE                          Module L01M156                   
+                            POWER MONITR 10:56:10A WED SEP 17, 2025     L01M156
+>
+<
+
+CLEARED TROUBLE                          Module L01M157                   
+                            POWER MONITR 10:58:29A WED SEP 17, 2025     L01M157
+>
+<
+
+TROUBLE                 BATTERY LOW      Module L01M157                   
+                            POWER MONITR 10:57:41A WED SEP 17, 2025     L01M157
+>
+<
+
+CLEARED TROUBLE                          Module L01M156                   
+                            POWER MONITR 10:56:10A WED SEP 17, 2025     L01M156
+>
+<
+
+TROUBLE                 AC FAILURE       Module L01M156                   
+                            POWER MONITR 10:55:35A WED SEP 17, 2025     L01M156
+>
+<
+
+CLEARED TROUBLE                          Module L01M158                   
+                            POWER MONITR 10:10:31A THU SEP 25, 2025     L01M158
+>
+<
+
+CLEARED TROUBLE                          Module L01M157                   
+                            POWER MONITR 10:58:29A WED SEP 17, 2025     L01M157
+>
+<
+
+CLEARED TROUBLE                          Module L01M156                   
+                            POWER MONITR 10:56:10A WED SEP 17, 2025     L01M156
+>
