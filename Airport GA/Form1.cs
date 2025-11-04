@@ -341,23 +341,7 @@ namespace Airport_GA
                         sw.WriteLine(alarmLog.Text.Substring(99));
                         sw.Close();
                     }
-                try
-                {
-                    if (!File.Exists(Path.Combine(@"logs", "LogFile_" + date.Text + " - " + time.Text.Replace(':', '_') + ".txt")))
-                    {
-                        File.Copy(logFile, Path.Combine(@"logs", "LogFile_" + date.Text + " - " + time.Text.Replace(':', '_') + ".txt"), false);
-                    }
-                }
-                catch (IOException iox)
-                {
-                    using (StreamWriter sw = File.AppendText("RestartBackupError.txt"))
-                    {
-                        sw.WriteLine(iox + "\n restartingError: [!727] " + time.Text + ", " + date.Text + "\n\n");
-                        sw.Close();
-                    }
-                }
-                System.IO.File.WriteAllText(logFile, string.Empty);
-                lineCom1 = "";
+                BackupAndClearLogs();
 
                 //Application.Restart();
                 //Environment.Exit(0);//this is to close current application to avoid having multilpe instances.
@@ -411,6 +395,7 @@ namespace Airport_GA
 
             // TIMER 1 END
         }
+
         private void Timer2_Tick_YouAreHere(object sender, EventArgs e)
         {
             if (blinkYouAreHere == false)
@@ -1403,7 +1388,41 @@ namespace Airport_GA
             }));
 
         }
-
+        private void BackupAndClearLogs()
+        {
+            try
+            {
+                if (!File.Exists(Path.Combine(@"logs", "LogFile_" + date.Text + " - " + time.Text.Replace(':', '_') + ".txt")))
+                {
+                    File.Copy(logFile, Path.Combine(@"logs", "LogFile_" + date.Text + " - " + time.Text.Replace(':', '_') + ".txt"), false);
+                }
+                if (!File.Exists(Path.Combine(@"logs", "rawSignal_" + date.Text + " - " + time.Text.Replace(':', '_') + ".txt")))
+                {
+                    File.Copy("rawSignal.txt", Path.Combine(@"logs", "rawSignal_" + date.Text + " - " + time.Text.Replace(':', '_') + ".txt"), false);
+                }
+                if (!File.Exists(Path.Combine(@"logs", "ActualSignalPort1_" + date.Text + " - " + time.Text.Replace(':', '_') + ".txt")))
+                {
+                    File.Copy("ActualSignalPort1.txt", Path.Combine(@"logs", "ActualSignalPort1_" + date.Text + " - " + time.Text.Replace(':', '_') + ".txt"), false);
+                }
+                if (!File.Exists(Path.Combine(@"logs", "signal_parts_port1_" + date.Text + " - " + time.Text.Replace(':', '_') + ".txt")))
+                {
+                    File.Copy("signal_parts_port1.txt", Path.Combine(@"logs", "signal_parts_port1_" + date.Text + " - " + time.Text.Replace(':', '_') + ".txt"), false);
+                }
+            }
+            catch (IOException iox)
+            {
+                using (StreamWriter sw = File.AppendText("RestartBackupError.txt"))
+                {
+                    sw.WriteLine(iox + "\n restartingError: [!727] " + time.Text + ", " + date.Text + "\n\n");
+                    sw.Close();
+                }
+            }
+            System.IO.File.WriteAllText(logFile, string.Empty);
+            System.IO.File.WriteAllText("rawSignal.txt", string.Empty);
+            System.IO.File.WriteAllText("ActualSignalPort1.txt", string.Empty);
+            System.IO.File.WriteAllText("signal_parts_port1.txt", string.Empty);
+            lineCom1 = "";
+        }
         private void gaca_logo_Click(object sender, EventArgs e)
         {
             if (!pauseRotat)
